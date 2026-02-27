@@ -155,12 +155,14 @@ let currentMode = 'movie';
 let lastResults = [];
 let lastPosters = [];
 const rgStore = {};
+const EMOJIS = ['🎬','🎥','🎞️','📽️','🎦','🎭','🌟','💫','⭐','🎵'];
 
 // ── TMDB — set your API key here once you have it ──────────
 // Get a free key at https://www.themoviedb.org/settings/api
-const TMDB_KEY = process.env.TMDB_KEY || '';  // <-- paste your key between the quotes
+const TMDB_KEY = '';  // <-- paste your key between the quotes
 
 async function tmdbSearch(title, year) {
+  if (!TMDB_KEY) return null;
   try {
     // Strip common soundtrack suffixes from MusicBrainz titles
     const cleanTitle = title
@@ -297,7 +299,7 @@ async function searchMovies(q) {
       if (/broadway|cast recording|musical|stage|theatre|theater/i.test(t)) return false;
       // Skip if primary title is non-Latin script (Korean, Japanese, etc.)
       // These are usually TV shows, not the film we want
-      if (/^[^ -\s\(\)]+/.test(t)) return false;
+      if (/^[^ -\s\(\)]+/.test(t)) return false;
       return true;
     });
 
@@ -330,7 +332,6 @@ async function searchMovies(q) {
   }
 }
 
-const EMOJIS = ['🎬','🎥','🎞️','📽️','🎦','🎭','🌟','💫','⭐','🎵'];
 
 function renderMovieList(groups, posters, q) {
   const rows = groups.map((rg, i) => {
