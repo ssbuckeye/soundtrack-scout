@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soundtrack Scout</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0e0e0f; --surface: #181819; --surface2: #222224;
+    --border: #2a2a2d; --text: #f0ede8; --text-muted: #7a7a82;
+    --accent: #e8c87a; --accent-dim: rgba(232,200,122,0.12);
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
+
+  header { padding: 20px 32px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(14,14,15,0.94); backdrop-filter: blur(12px); z-index: 100; }
+  .logo { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); display: flex; align-items: center; gap: 10px; }
+  .logo-dot { color: var(--accent); }
+  .badge { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); background: var(--accent-dim); padding: 3px 8px; border-radius: 4px; }
+
+  .main { max-width: 720px; margin: 0 auto; padding: 56px 32px 24px; }
+  .headline { font-family: 'DM Serif Display', serif; font-size: 36px; line-height: 1.15; margin-bottom: 8px; letter-spacing: -0.5px; }
+  .headline em { color: var(--accent); font-style: italic; }
+  .sub { color: var(--text-muted); margin-bottom: 28px; }
+
+  .tabs { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 4px; width: fit-content; margin-bottom: 14px; }
+  .tab { padding: 8px 20px; border-radius: 7px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text-muted); transition: all 0.18s; border: none; background: none; font-family: 'DM Sans', sans-serif; position: relative; }
+  .tab.active { background: var(--surface2); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+  .tab-soon { font-size: 9px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--accent); background: var(--accent-dim); padding: 1px 5px; border-radius: 3px; margin-left: 6px; vertical-align: middle; }
+
+  .search-row { display: flex; gap: 10px; }
+  .search-input { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-size: 15px; color: var(--text); font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.18s; }
+  .search-input:focus { border-color: var(--accent); }
+  .search-input::placeholder { color: var(--text-muted); }
+  .search-btn { background: var(--accent); color: #1a1400; border: none; border-radius: 10px; padding: 14px 24px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: opacity 0.18s; white-space: nowrap; }
+  .search-btn:hover { opacity: 0.88; }
+  .search-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .trending { margin-top: 18px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .trending-label { font-size: 12px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; }
+  .chip { font-size: 13px; color: var(--text-muted); background: var(--surface); border: 1px solid var(--border); padding: 5px 12px; border-radius: 20px; cursor: pointer; transition: all 0.18s; }
+  .chip:hover { color: var(--text); border-color: var(--accent); }
+
+  .results { max-width: 860px; margin: 0 auto; padding: 0 32px 80px; }
+  .results-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+  .results-title { font-family: 'DM Serif Display', serif; font-size: 22px; }
+  .results-title span { color: var(--accent); }
+  .results-count { font-size: 13px; color: var(--text-muted); }
+
+  /* Movie list */
+  .movie-list-item { display: flex; align-items: center; gap: 16px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; cursor: pointer; transition: border-color 0.18s; }
+  .movie-list-item:hover { border-color: var(--accent); }
+  .movie-list-thumb { width: 48px; height: 70px; border-radius: 6px; background: var(--surface2); flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+  .movie-list-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .movie-list-info { flex: 1; }
+  .movie-list-title { font-weight: 600; font-size: 15px; }
+  .movie-list-meta { font-size: 13px; color: var(--text-muted); }
+  .movie-list-arrow { color: var(--accent); font-size: 20px; }
+
+  /* Soundtrack view */
+  .back-btn { font-size: 13px; color: var(--accent); cursor: pointer; background: none; border: none; font-family: 'DM Sans', sans-serif; padding: 0; margin-bottom: 16px; display: inline-flex; align-items: center; gap: 6px; }
+  .soundtrack-header { display: grid; grid-template-columns: 120px 1fr; gap: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 4px; }
+  .soundtrack-poster { width: 120px; height: 178px; border-radius: 8px; background: var(--surface2); flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 40px; }
+  .soundtrack-poster img { width: 100%; height: 100%; object-fit: cover; }
+  .soundtrack-title { font-family: 'DM Serif Display', serif; font-size: 24px; margin-bottom: 4px; }
+  .soundtrack-meta { font-size: 13px; color: var(--text-muted); margin-bottom: 4px; }
+  .soundtrack-overview { font-size: 13px; color: var(--text-muted); margin-top: 10px; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+  .tracks-container { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 8px; margin-bottom: 14px; }
+  .track-item { display: flex; align-items: center; gap: 14px; padding: 11px 12px; border-radius: 8px; transition: background 0.15s; }
+  .track-item:hover { background: var(--surface2); }
+  .track-num { font-size: 13px; color: var(--text-muted); width: 22px; text-align: right; flex-shrink: 0; }
+  .track-info { flex: 1; min-width: 0; }
+  .track-title { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .track-artist { font-size: 12px; color: var(--text-muted); }
+  .track-duration { font-size: 12px; color: var(--text-muted); flex-shrink: 0; }
+  .track-links { display: flex; gap: 6px; flex-shrink: 0; }
+  .tlink { font-size: 11px; padding: 4px 9px; border-radius: 4px; border: 1px solid var(--border); color: var(--text-muted); text-decoration: none; transition: all 0.15s; }
+  .tlink:hover { color: var(--text); border-color: var(--text-muted); }
+
+  /* States */
+  .loading { text-align: center; padding: 60px 32px; color: var(--text-muted); }
+  .spinner { width: 32px; height: 32px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .empty { text-align: center; padding: 60px 32px; color: var(--text-muted); }
+  .empty-icon { font-size: 44px; margin-bottom: 14px; }
+  .empty h3 { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--text); margin-bottom: 8px; }
+  .notice { font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 12px; padding: 10px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border); }
+
+  /* Coming soon */
+  .coming-soon { text-align: center; padding: 64px 32px; max-width: 480px; margin: 0 auto; }
+  .coming-soon-icon { font-size: 52px; margin-bottom: 20px; }
+  .coming-soon h2 { font-family: 'DM Serif Display', serif; font-size: 26px; margin-bottom: 12px; line-height: 1.2; }
+  .coming-soon p { color: var(--text-muted); margin-bottom: 24px; line-height: 1.7; }
+  .feature-list { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; text-align: left; margin-bottom: 24px; }
+  .feature-list-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 12px; }
+  .feature-item { display: flex; align-items: center; gap: 10px; font-size: 14px; padding: 5px 0; }
+  .feature-item span { color: var(--accent); }
+
+  footer { text-align: center; padding: 28px; color: var(--text-muted); font-size: 12px; border-top: 1px solid var(--border); margin-top: 40px; }
+
+  @media (max-width: 600px) {
+    header { padding: 14px 20px; }
+    .main { padding: 36px 20px 20px; }
+    .headline { font-size: 28px; }
+    .results { padding: 0 20px 60px; }
+    .track-links { display: none; }
+    .track-duration { display: none; }
+    .soundtrack-header { grid-template-columns: 90px 1fr; }
+    .soundtrack-poster { width: 90px; height: 134px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Soundtrack<span class="logo-dot">.</span>Scout</div>
+  <span class="badge">Live Data</span>
+</header>
+
+<section class="main">
+  <h1 class="headline">Where have you heard<br><em>that song</em> before?</h1>
+  <p class="sub">Real soundtrack data — search thousands of films.</p>
+
+  <div class="tabs">
+    <button class="tab active" onclick="setMode('movie')" id="tab-movie">🎬 Movie → Songs</button>
+    <button class="tab" onclick="setMode('song')" id="tab-song">🎵 Song → Movies <span class="tab-soon">Soon</span></button>
+  </div>
+
+  <div class="search-row">
+    <input class="search-input" id="searchInput" type="text" placeholder="Try: Pulp Fiction, Drive, Almost Famous..." autocomplete="off" />
+    <button class="search-btn" id="searchBtn" onclick="doSearch()">Search</button>
+  </div>
+
+  <div class="trending">
+    <span class="trending-label">Try</span>
+    <span class="chip" onclick="quickSearch('Pulp Fiction')">Pulp Fiction</span>
+    <span class="chip" onclick="quickSearch('Drive')">Drive</span>
+    <span class="chip" onclick="quickSearch('Almost Famous')">Almost Famous</span>
+    <span class="chip" onclick="quickSearch('Trainspotting')">Trainspotting</span>
+    <span class="chip" onclick="quickSearch('Guardians of the Galaxy')">Guardians of the Galaxy</span>
+  </div>
+</section>
+
+<section class="results" id="resultsSection" style="display:none">
+  <div id="resultsContent"></div>
+</section>
+
+<footer>Soundtrack Scout · Powered by <a href="https://musicbrainz.org" target="_blank" style="color:var(--text-muted)">MusicBrainz</a> + <a href="https://themoviedb.org" target="_blank" style="color:var(--text-muted)">TMDB</a> · Built with Claude</footer>
+
+<script>
+const API = '/api/mb';
+let currentMode = 'movie';
+let lastResults = [];
+let lastPosters = [];
+const rgStore = {};
+
+// ── TMDB — set your API key here once you have it ──────────
+// Get a free key at https://www.themoviedb.org/settings/api
+const TMDB_KEY = '7c974a554f5d94552bc945f1c490f3c2';  // <-- paste your key between the quotes
+
+async function tmdbSearch(title, year) {
+  if (!TMDB_KEY) return null;
+  try {
+    // Strip common soundtrack suffixes from MusicBrainz titles
+    const cleanTitle = title
+      .replace(/:\s*(music from|songs from|original motion picture|original soundtrack|ost|the motion picture|the original soundtrack|music from and inspired by|the album|music from the film).*/i, '')
+      .replace(/\s*[\-–]\s*(original motion picture|original soundtrack|ost|soundtrack).*/i, '')
+      .replace(/\s*\(.*?(soundtrack|score|ost|music from|music inspired).*?\)/i, '')
+      .replace(/\s*(soundtrack|score|ost)\s*$/i, '')
+      .trim();
+    const q = encodeURIComponent(cleanTitle);
+
+    // Fetch results without year constraint so we get the full list
+    const r = await fetch(`/api/tmdb?path=/search/movie&query=${q}`);
+    if (!r.ok) return null;
+    const data = await r.json();
+    const results = data.results || [];
+    if (!results.length) return null;
+
+    // Pick best match:
+    // 1. Exact title match closest to the given year
+    // 2. Exact title match with highest popularity
+    // 3. First result by popularity
+    const titleLower = title.toLowerCase();
+    const exactMatches = results.filter(r =>
+      r.title?.toLowerCase() === titleLower ||
+      r.original_title?.toLowerCase() === titleLower
+    );
+
+    let best = null;
+    if (exactMatches.length && year) {
+      // Find closest year match among exact title matches
+      best = exactMatches.reduce((a, b) => {
+        const aDiff = Math.abs(parseInt(a.release_date) - parseInt(year));
+        const bDiff = Math.abs(parseInt(b.release_date) - parseInt(year));
+        return aDiff <= bDiff ? a : b;
+      });
+    } else if (exactMatches.length) {
+      // Most popular exact match
+      best = exactMatches.reduce((a, b) => (a.popularity > b.popularity ? a : b));
+    } else {
+      // Fall back to most popular result overall
+      best = results.reduce((a, b) => (a.popularity > b.popularity ? a : b));
+    }
+    return {
+      poster: best.poster_path ? `https://image.tmdb.org/t/p/w300${best.poster_path}` : null,
+      overview: best.overview || '',
+      rating: best.vote_average ? best.vote_average.toFixed(1) : '',
+      year: best.release_date ? best.release_date.substring(0, 4) : ''
+    };
+  } catch { return null; }
+}
+
+async function mbFetch(endpoint, params = {}) {
+  params.fmt = 'json';
+  params.endpoint = endpoint;
+  const qs = new URLSearchParams(params).toString();
+  const r = await fetch(`${API}?${qs}`);
+  if (!r.ok) throw new Error(`Server error ${r.status}`);
+  return r.json();
+}
+
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('tab-movie').classList.toggle('active', mode === 'movie');
+  document.getElementById('tab-song').classList.toggle('active', mode === 'song');
+  document.getElementById('searchInput').placeholder = mode === 'movie'
+    ? 'Try: Pulp Fiction, Drive, Almost Famous...'
+    : 'Try: Tiny Dancer, Heroes, Born to Run...';
+  if (mode === 'song') {
+    showSongComingSoon();
+  } else {
+    document.getElementById('resultsSection').style.display = 'none';
+  }
+}
+
+function quickSearch(term) {
+  document.getElementById('searchInput').value = term;
+  doSearch();
+}
+
+function showLoading(msg) {
+  document.getElementById('resultsSection').style.display = 'block';
+  document.getElementById('resultsContent').innerHTML =
+    `<div class="loading"><div class="spinner"></div><p>${msg}</p></div>`;
+  document.getElementById('searchBtn').disabled = true;
+  document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function doneLoading() { document.getElementById('searchBtn').disabled = false; }
+
+function fmtDuration(ms) {
+  if (!ms) return '';
+  const s = Math.round(ms / 1000);
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+}
+
+function escHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+async function doSearch() {
+  const q = document.getElementById('searchInput').value.trim();
+  if (!q) return;
+  if (currentMode === 'song') { showSongComingSoon(); return; }
+  await searchMovies(q);
+}
+
+// ── MOVIE MODE ──────────────────────────────────────────────
+
+async function searchMovies(q) {
+  showLoading('Searching soundtracks…');
+  try {
+    let groups = [];
+
+    // Three-tier search: strict → broad → broadest
+    const attempts = [
+      { query: `releasegroup:"${q}" AND secondarytype:Soundtrack`, limit: 10 },
+      { query: `${q} AND secondarytype:Soundtrack`, limit: 10 },
+      { query: q, limit: 25 }
+    ];
+
+    for (const params of attempts) {
+      if (groups.length) break;
+      const data = await mbFetch('release-group', params);
+      groups = (data['release-groups'] || []).filter(rg =>
+        (rg['secondary-types'] || []).some(t => t.toLowerCase() === 'soundtrack')
+      );
+    }
+
+    // Filter out non-film results: Broadway cast recordings, TV OSTs with non-Latin titles, etc.
+    groups = groups.filter(rg => {
+      const t = rg.title;
+      // Skip if title contains Broadway/cast recording indicators
+      if (/broadway|cast recording|musical|stage|theatre|theater/i.test(t)) return false;
+      // Skip if primary title is non-Latin script (Korean, Japanese, etc.)
+      // These are usually TV shows, not the film we want
+      if (/^[^ -\s\(\)]+/.test(t)) return false;
+      return true;
+    });
+
+    if (!groups.length) {
+      document.getElementById('resultsContent').innerHTML = `
+        <div class="empty"><div class="empty-icon">🎬</div>
+        <h3>No soundtrack found for "${escHtml(q)}"</h3>
+        <p>Try a slightly different title — MusicBrainz has 50,000+ soundtracks.</p></div>`;
+      doneLoading(); return;
+    }
+
+    lastResults = groups;
+    groups.forEach((rg, i) => { rgStore[i] = rg; });
+
+    // Fetch TMDB posters in parallel — each entry uses its own year
+    lastPosters = await Promise.all(groups.map(rg => {
+      const year = (rg['first-release-date'] || '').substring(0, 4);
+      console.log(`MB title: "${rg.title}" year="${year}"`);
+      return tmdbSearch(rg.title, year);
+    }));
+
+    renderMovieList(groups, lastPosters, q);
+  } catch(e) {
+    document.getElementById('resultsContent').innerHTML = `
+      <div class="empty"><div class="empty-icon">😕</div>
+      <h3>Could not connect to server</h3>
+      <p>Make sure the server is running: <code>node server.js</code></p>
+      <p style="margin-top:8px;font-size:12px;color:var(--text-muted)">${e.message}</p></div>`;
+    doneLoading();
+  }
+}
+
+const EMOJIS = ['🎬','🎥','🎞️','📽️','🎦','🎭','🌟','💫','⭐','🎵'];
+
+function renderMovieList(groups, posters, q) {
+  const rows = groups.map((rg, i) => {
+    const year = (rg['first-release-date'] || '').substring(0, 4) || 'Year unknown';
+    const poster = posters[i];
+    const thumbHtml = poster?.poster
+      ? `<img src="${poster.poster}" alt="${escHtml(rg.title)}" onerror="this.style.display='none';this.parentNode.innerHTML='${EMOJIS[i % EMOJIS.length]}'">`
+      : EMOJIS[i % EMOJIS.length];
+    return `
+      <div class="movie-list-item" onclick="loadSoundtrack(${i})">
+        <div class="movie-list-thumb">${thumbHtml}</div>
+        <div class="movie-list-info">
+          <div class="movie-list-title">${escHtml(rg.title)}</div>
+          <div class="movie-list-meta">${year}${poster?.rating ? ' · ★ ' + poster.rating : ''} · Soundtrack</div>
+        </div>
+        <div class="movie-list-arrow">›</div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('resultsContent').innerHTML = `
+    <div class="results-header">
+      <div class="results-title">Results for <span>"${escHtml(q)}"</span></div>
+      <div class="results-count">${groups.length} found</div>
+    </div>
+    ${rows}
+    <div class="notice">Click any result to see its full track listing</div>`;
+  doneLoading();
+}
+
+async function loadSoundtrack(idx) {
+  const rg = rgStore[idx];
+  if (!rg) return;
+  const title = rg.title;
+  const year = (rg['first-release-date'] || '').substring(0, 4);
+  const rgId = rg.id;
+
+  showLoading(`Loading "${escHtml(title)}" soundtrack…`);
+  try {
+    // Fetch TMDB metadata and MusicBrainz tracks in parallel
+    const [tmdb, relData] = await Promise.all([
+      tmdbSearch(title, year),
+      mbFetch('release', { 'release-group': rgId, limit: 5 })
+    ]);
+
+    const releases = relData.releases || [];
+    let allTracks = [];
+
+    if (releases.length) {
+      const fullRelease = await mbFetch(`release/${releases[0].id}`, { inc: 'recordings+artist-credits' });
+      allTracks = (fullRelease.media || []).flatMap(m => m.tracks || []);
+    }
+
+    renderSoundtrack(allTracks, title, year, rgId, tmdb);
+  } catch(e) {
+    document.getElementById('resultsContent').innerHTML = `
+      <div class="empty"><div class="empty-icon">😕</div>
+      <h3>Couldn't load soundtrack</h3><p>${e.message}</p></div>
+      <button class="back-btn" onclick="goBack()">← Back</button>`;
+    doneLoading();
+  }
+}
+
+function renderSoundtrack(tracks, title, year, rgId, tmdb) {
+  const posterHtml = tmdb?.poster
+    ? `<img src="${tmdb.poster}" alt="${escHtml(title)}">`
+    : '🎬';
+
+  const metaLine = [
+    year || 'Year unknown',
+    tmdb?.rating ? '★ ' + tmdb.rating : '',
+  ].filter(Boolean).join(' · ');
+
+  const overviewHtml = tmdb?.overview
+    ? `<div class="soundtrack-overview">${escHtml(tmdb.overview)}</div>`
+    : '';
+
+  const tracksHtml = tracks.length
+    ? tracks.map((t, i) => {
+        const rec = t.recording || {};
+        const credits = rec['artist-credit'] || t['artist-credit'] || [];
+        const artist = credits.map(a => typeof a === 'string' ? a : (a.artist?.name || '')).join('');
+        const trackTitle = t.title || rec.title || 'Unknown Track';
+        const dur = fmtDuration(t.length || rec.length);
+        const q = encodeURIComponent(`${trackTitle} ${artist}`);
+        return `
+          <div class="track-item">
+            <span class="track-num">${i + 1}</span>
+            <div class="track-info">
+              <div class="track-title">${escHtml(trackTitle)}</div>
+              <div class="track-artist">${escHtml(artist) || 'Various Artists'}</div>
+            </div>
+            <span class="track-duration">${dur}</span>
+            <div class="track-links">
+              <a class="tlink" href="https://open.spotify.com/search/${q}" target="_blank">Spotify</a>
+              <a class="tlink" href="https://music.apple.com/us/search?term=${q}" target="_blank">Apple</a>
+            </div>
+          </div>`;
+      }).join('')
+    : `<div class="empty" style="padding:40px 0">
+         <div class="empty-icon">🎵</div>
+         <h3>Track listing not in database yet</h3>
+         <p>This is exactly the gap Tunefind fills — once integrated, every track will show here with scene context.</p>
+       </div>`;
+
+  document.getElementById('resultsContent').innerHTML = `
+    <button class="back-btn" onclick="goBack()">← Back to results</button>
+    <div class="results-header">
+      <div class="results-title">Soundtrack: <span>${escHtml(title)}</span></div>
+      <div class="results-count">${tracks.length} tracks</div>
+    </div>
+    <div class="soundtrack-header">
+      <div class="soundtrack-poster">${posterHtml}</div>
+      <div>
+        <div class="soundtrack-title">${escHtml(title)}</div>
+        <div class="soundtrack-meta">${metaLine}</div>
+        ${overviewHtml}
+        <div style="margin-top:10px">
+          <a href="https://musicbrainz.org/release-group/${rgId}" target="_blank" style="color:var(--accent);font-size:12px">View on MusicBrainz ↗</a>
+        </div>
+      </div>
+    </div>
+    <div class="tracks-container">${tracksHtml}</div>
+    <div class="notice">Scene context &amp; timestamps coming with Tunefind · Streaming links open search on each platform</div>`;
+  doneLoading();
+}
+
+function goBack() {
+  const q = document.getElementById('searchInput').value;
+  if (lastResults.length) {
+    renderMovieList(lastResults, lastPosters, q);
+  }
+}
+
+// ── SONG MODE — Coming Soon ─────────────────────────────────
+
+function showSongComingSoon() {
+  document.getElementById('resultsSection').style.display = 'block';
+  document.getElementById('resultsContent').innerHTML = `
+    <div class="coming-soon">
+      <div class="coming-soon-icon">🎵</div>
+      <h2>Song → Movies is coming soon</h2>
+      <p>This is the feature that makes Soundtrack Scout truly unique — search any song and instantly see every film it's ever appeared in, with the exact scene and timestamp.</p>
+      <div class="feature-list">
+        <div class="feature-list-label">Powered by Tunefind integration</div>
+        <div class="feature-item"><span>✦</span> Search any song by title or artist</div>
+        <div class="feature-item"><span>✦</span> See every movie &amp; TV show it appeared in</div>
+        <div class="feature-item"><span>✦</span> Scene descriptions &amp; timestamps</div>
+        <div class="feature-item"><span>✦</span> "Where have I heard this?" — answered instantly</div>
+      </div>
+      <p style="font-size:13px">In the meantime, try <strong style="color:var(--text)">Movie → Songs</strong> — fully live with real data right now.</p>
+    </div>`;
+  document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+document.getElementById('searchInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doSearch();
+});
+</script>
+</body>
+</html>
