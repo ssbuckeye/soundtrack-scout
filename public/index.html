@@ -292,14 +292,13 @@ async function searchMovies(q) {
       );
     }
 
-    // Filter out non-film results: Broadway cast recordings, TV OSTs with non-Latin titles, etc.
+    // Filter out non-film results: Broadway cast recordings, TV OSTs, etc.
     groups = groups.filter(rg => {
       const t = rg.title;
-      // Skip if title contains Broadway/cast recording indicators
-      if (/broadway|cast recording|musical|stage|theatre|theater/i.test(t)) return false;
-      // Skip if primary title is non-Latin script (Korean, Japanese, etc.)
-      // These are usually TV shows, not the film we want
-      if (/^[^ -\s\(\)]+/.test(t)) return false;
+      // Skip Broadway/cast recording/stage show results
+      if (/broadway|cast recording|stage|theatre|theater/i.test(t)) return false;
+      // Skip if title starts with non-ASCII characters (Korean, Japanese, etc.)
+      if (t.charCodeAt(0) > 127) return false;
       return true;
     });
 
