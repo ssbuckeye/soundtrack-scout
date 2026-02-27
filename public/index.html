@@ -162,7 +162,6 @@ const EMOJIS = ['🎬','🎥','🎞️','📽️','🎦','🎭','🌟','💫','�
 const TMDB_KEY = '';  // <-- paste your key between the quotes
 
 async function tmdbSearch(title, year) {
-  if (!TMDB_KEY) return null;
   try {
     // Strip common soundtrack suffixes from MusicBrainz titles
     const cleanTitle = title
@@ -316,7 +315,6 @@ async function searchMovies(q) {
     // Fetch TMDB posters in parallel — each entry uses its own year
     lastPosters = await Promise.all(groups.map(rg => {
       const year = (rg['first-release-date'] || '').substring(0, 4);
-      console.log(`MB title: "${rg.title}" year="${year}"`);
       return tmdbSearch(rg.title, year);
     }));
 
