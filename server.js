@@ -7,7 +7,7 @@ const PORT = 3000;
 
 // ── Put your TMDB API key here ──────────────────────────────
 // Free key at: https://www.themoviedb.org/settings/api
-const TMDB_KEY = '7c974a554f5d94552bc945f1c490f3c2';  // <-- paste your key between the quotes
+const TMDB_KEY = process.env.TMDB_KEY || '';  // <-- paste your key between the quotes
 // ───────────────────────────────────────────────────────────
 
 app.use(express.static(path.join(__dirname, 'public')));
