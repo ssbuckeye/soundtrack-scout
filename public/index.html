@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Soundtrack Scout</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&family=Nunito+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -12,28 +12,28 @@
     --border: #2a2a2d; --text: #f0ede8; --text-muted: #7a7a82;
     --accent: #e8c87a; --accent-dim: rgba(232,200,122,0.12);
   }
-  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
+  body { background: var(--bg); color: var(--text); font-family: 'Nunito Sans', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
 
   header { padding: 20px 32px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(14,14,15,0.94); backdrop-filter: blur(12px); z-index: 100; }
-  .logo { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); display: flex; align-items: center; gap: 10px; }
+  .logo { font-family: 'Nunito', sans-serif; font-size: 22px; color: var(--text); display: flex; align-items: center; gap: 10px; }
   .logo-dot { color: var(--accent); }
   .badge { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); background: var(--accent-dim); padding: 3px 8px; border-radius: 4px; }
 
   .main { max-width: 720px; margin: 0 auto; padding: 56px 32px 24px; }
-  .headline { font-family: 'DM Serif Display', serif; font-size: 36px; line-height: 1.15; margin-bottom: 8px; letter-spacing: -0.5px; }
-  .headline em { color: var(--accent); font-style: italic; }
+  .headline { font-family: 'Nunito', sans-serif; font-size: 36px; line-height: 1.15; margin-bottom: 8px; letter-spacing: -0.5px; }
+  .headline em { color: var(--accent); font-style: normal; font-weight: 700; }
   .sub { color: var(--text-muted); margin-bottom: 28px; }
 
   .tabs { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 4px; width: fit-content; margin-bottom: 14px; }
-  .tab { padding: 8px 20px; border-radius: 7px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text-muted); transition: all 0.18s; border: none; background: none; font-family: 'DM Sans', sans-serif; position: relative; }
+  .tab { padding: 8px 20px; border-radius: 7px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text-muted); transition: all 0.18s; border: none; background: none; font-family: 'Nunito Sans', sans-serif; position: relative; }
   .tab.active { background: var(--surface2); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
   .tab-soon { font-size: 9px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--accent); background: var(--accent-dim); padding: 1px 5px; border-radius: 3px; margin-left: 6px; vertical-align: middle; }
 
   .search-row { display: flex; gap: 10px; }
-  .search-input { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-size: 15px; color: var(--text); font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.18s; }
+  .search-input { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-size: 15px; color: var(--text); font-family: 'Nunito Sans', sans-serif; outline: none; transition: border-color 0.18s; }
   .search-input:focus { border-color: var(--accent); }
   .search-input::placeholder { color: var(--text-muted); }
-  .search-btn { background: var(--accent); color: #1a1400; border: none; border-radius: 10px; padding: 14px 24px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: opacity 0.18s; white-space: nowrap; }
+  .search-btn { background: var(--accent); color: #1a1400; border: none; border-radius: 10px; padding: 14px 24px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Nunito Sans', sans-serif; transition: opacity 0.18s; white-space: nowrap; }
   .search-btn:hover { opacity: 0.88; }
   .search-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -44,7 +44,7 @@
 
   .results { max-width: 860px; margin: 0 auto; padding: 0 32px 80px; }
   .results-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
-  .results-title { font-family: 'DM Serif Display', serif; font-size: 22px; }
+  .results-title { font-family: 'Nunito', sans-serif; font-size: 22px; }
   .results-title span { color: var(--accent); }
   .results-count { font-size: 13px; color: var(--text-muted); }
 
@@ -59,11 +59,11 @@
   .movie-list-arrow { color: var(--accent); font-size: 20px; }
 
   /* Soundtrack view */
-  .back-btn { font-size: 13px; color: var(--accent); cursor: pointer; background: none; border: none; font-family: 'DM Sans', sans-serif; padding: 0; margin-bottom: 16px; display: inline-flex; align-items: center; gap: 6px; }
+  .back-btn { font-size: 13px; color: var(--accent); cursor: pointer; background: none; border: none; font-family: 'Nunito Sans', sans-serif; padding: 0; margin-bottom: 16px; display: inline-flex; align-items: center; gap: 6px; }
   .soundtrack-header { display: grid; grid-template-columns: 120px 1fr; gap: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 4px; }
   .soundtrack-poster { width: 120px; height: 178px; border-radius: 8px; background: var(--surface2); flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 40px; }
   .soundtrack-poster img { width: 100%; height: 100%; object-fit: cover; }
-  .soundtrack-title { font-family: 'DM Serif Display', serif; font-size: 24px; margin-bottom: 4px; }
+  .soundtrack-title { font-family: 'Nunito', sans-serif; font-size: 24px; margin-bottom: 4px; }
   .soundtrack-meta { font-size: 13px; color: var(--text-muted); margin-bottom: 4px; }
   .soundtrack-overview { font-size: 13px; color: var(--text-muted); margin-top: 10px; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
@@ -85,13 +85,13 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   .empty { text-align: center; padding: 60px 32px; color: var(--text-muted); }
   .empty-icon { font-size: 44px; margin-bottom: 14px; }
-  .empty h3 { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--text); margin-bottom: 8px; }
+  .empty h3 { font-family: 'Nunito', sans-serif; font-size: 20px; color: var(--text); margin-bottom: 8px; }
   .notice { font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 12px; padding: 10px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border); }
 
   /* Coming soon */
   .coming-soon { text-align: center; padding: 64px 32px; max-width: 480px; margin: 0 auto; }
   .coming-soon-icon { font-size: 52px; margin-bottom: 20px; }
-  .coming-soon h2 { font-family: 'DM Serif Display', serif; font-size: 26px; margin-bottom: 12px; line-height: 1.2; }
+  .coming-soon h2 { font-family: 'Nunito', sans-serif; font-size: 26px; margin-bottom: 12px; line-height: 1.2; }
   .coming-soon p { color: var(--text-muted); margin-bottom: 24px; line-height: 1.7; }
   .feature-list { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; text-align: left; margin-bottom: 24px; }
   .feature-list-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 12px; }
@@ -115,7 +115,13 @@
 <body>
 
 <header>
-  <div class="logo">Soundtrack<span class="logo-dot">.</span>Scout</div>
+  <div class="logo">
+    <svg width="200" height="36" viewBox="0 0 200 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="3" width="30" height="26" rx="4" fill="#e8c87a" fill-opacity="0.1" stroke="#e8c87a" stroke-width="1.3"/>
+      <polygon points="10,10 10,23 23,16.5" fill="#e8c87a"/>
+      <text x="40" y="25" font-family="Nunito, sans-serif" font-weight="700" font-size="18" letter-spacing="-0.4" fill="#f0ede8">Soundtrack<tspan fill="#e8c87a">.</tspan>Scout</text>
+    </svg>
+  </div>
   <span class="badge">Live Data</span>
 </header>
 
