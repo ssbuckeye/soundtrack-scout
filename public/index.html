@@ -141,7 +141,7 @@
 
   <div class="tabs">
     <button class="tab active" onclick="setMode('movie')" id="tab-movie">🎬 Movie → Songs</button>
-    <button class="tab" onclick="setMode('song')" id="tab-song">🎵 Song → Movies</button>
+    <button class="tab" onclick="setMode('song')" id="tab-song">🎵 Song → Movies <span class="tab-soon">Beta</span></button>
   </div>
 
   <div class="search-row">
@@ -501,20 +501,24 @@ function renderSongResults(results, q) {
     const appearancesHtml = appearances.length
       ? `<div class="appearances-label">Found in ${appearances.length} soundtrack${appearances.length !== 1 ? 's' : ''}</div>
          ${appearances.map(({ playlist, movieTitle, tmdb }) => {
+           // Use TMDB poster, then Spotify album art, then emoji fallback
            const posterHtml = tmdb?.poster
              ? `<img src="${tmdb.poster}" alt="${escHtml(movieTitle)}">`
-             : '🎬';
+             : playlist.image
+               ? `<img src="${escHtml(playlist.image)}" alt="${escHtml(movieTitle)}">`
+               : '🎬';
+           const displayYear = tmdb?.year || playlist.year || '';
            return `
              <div class="appearance-item">
                <div class="appearance-poster">${posterHtml}</div>
                <div style="flex:1;min-width:0">
                  <div class="appearance-title">${escHtml(movieTitle || playlist.name)}</div>
                  <div class="appearance-year">
-                   ${tmdb?.year || ''}
+                   ${displayYear}
                    <span class="appearance-type">Soundtrack</span>
                  </div>
                </div>
-               <a href="${playlist.external_urls?.spotify || '#'}" target="_blank" style="font-size:11px;color:var(--green);text-decoration:none;flex-shrink:0">▶ Play</a>
+               <a href="${escHtml(playlist.spotifyUrl || '#')}" target="_blank" style="font-size:11px;color:var(--green);text-decoration:none;flex-shrink:0">▶ Play</a>
              </div>`;
          }).join('')}`
       : `<div class="no-appearances">No soundtrack playlists found for this song on Spotify. Try another version or spelling.</div>`;
