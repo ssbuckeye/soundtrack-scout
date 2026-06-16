@@ -151,6 +151,8 @@ app.get('/api/spotify/track-playlists', async (req, res) => {
         if (/top \d+|greatest hits|collection|instrumenta|mix|radio/i.test(name)) return false;
         if (name.charCodeAt(0) > 127) return false;
         if (name.length < 4 || name.length > 80) return false;
+        // Blacklist known junk playlists
+        if (/efteling|disney on ice|karaoke|lullaby|ringtone/i.test(name)) return false;
         // Don't add if we already have this movie from album search
         const clean = name.replace(/soundtrack|score|music from/gi, '').trim().toLowerCase();
         if (verified.some(v => v.cleanName.toLowerCase().includes(clean.substring(0, 10)))) return false;
