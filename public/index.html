@@ -663,9 +663,9 @@ function renderModal() {
   const d = currentShareData;
   const modal = document.getElementById('share-modal');
 
-  const tabs = ['movie', 'top5', 'discovery'].map(t => `
+  const tabs = ['movie', 'discovery'].map(t => `
     <button class="card-tab ${currentCardType === t ? 'active' : ''}" onclick="setCardType('${t}')">
-      ${t === 'movie' ? '🎬 Soundtrack' : t === 'top5' ? '🏆 Top 5' : '✦ Discovery'}
+      ${t === 'movie' ? '🎬 Soundtrack' : '✦ Discovery'}
     </button>`).join('');
 
   const cardHtml = buildCardHtml(currentCardType, d);
@@ -726,41 +726,6 @@ function buildCardHtml(type, d) {
           </div>
         </div>
         <div class="sc-tracks">${tracksHtml || '<div style="padding:20px;color:#7a7a82;font-size:13px">Track listing unavailable</div>'}</div>
-        <div class="sc-footer">
-          <span class="sc-logo-text">Soundtrack<span class="sc-logo-dot">.</span>Scout</span>
-          <span class="sc-url">soundtrackscout.app</span>
-        </div>
-      </div>`;
-  }
-
-  if (type === 'top5') {
-    const rankEmojis = ['🥇','🥈','🥉','4️⃣','5️⃣'];
-    const tracksHtml = top5.map((t, i) => {
-      const rec = t.recording || {};
-      const credits = rec['artist-credit'] || t['artist-credit'] || [];
-      const artist = credits.map(a => typeof a === 'string' ? a : (a.artist?.name || '')).join('');
-      const title = t.title || rec.title || 'Unknown Track';
-      return `
-        <div style="display:flex;align-items:center;gap:12px;padding:11px 20px;border-bottom:1px solid #2a2a2d">
-          <span style="font-size:18px;flex-shrink:0">${rankEmojis[i]}</span>
-          <div style="flex:1;min-width:0">
-            <div style="font-size:13px;font-weight:700;color:#f0ede8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(title)}</div>
-            <div style="font-size:11px;color:#7a7a82">${escHtml(artist) || 'Various Artists'}</div>
-          </div>
-        </div>`;
-    }).join('');
-    const posterHtml = d.tmdb?.poster ? `<img src="${d.tmdb.poster}" alt="${escHtml(d.title)}">` : '🎬';
-    return `
-      <div class="sc-card">
-        <div style="background:#181819;padding:16px 20px;border-bottom:1px solid #2a2a2d;display:flex;align-items:center;gap:12px">
-          <div style="width:48px;height:70px;border-radius:5px;background:#222224;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:22px">${posterHtml}</div>
-          <div>
-            <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#e8c87a;margin-bottom:3px">Top 5 Songs</div>
-            <div style="font-family:'Nunito',sans-serif;font-size:18px;font-weight:800;color:#f0ede8;line-height:1.2">${escHtml(d.title)}</div>
-            <div style="font-size:12px;color:#7a7a82">${d.year || ''}</div>
-          </div>
-        </div>
-        <div>${tracksHtml || '<div style="padding:20px;color:#7a7a82;font-size:13px">Track listing unavailable</div>'}</div>
         <div class="sc-footer">
           <span class="sc-logo-text">Soundtrack<span class="sc-logo-dot">.</span>Scout</span>
           <span class="sc-url">soundtrackscout.app</span>
