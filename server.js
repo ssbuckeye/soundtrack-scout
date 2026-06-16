@@ -11,7 +11,7 @@ const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET || '';
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ── Spotify Token Cache ─────────────────────────────────────
+// ── Spotify Token ───────────────────────────────────────────
 let spotifyToken = null;
 let spotifyTokenExpiry = 0;
 
@@ -20,28 +20,35 @@ async function getSpotifyToken() {
   const creds = Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`).toString('base64');
   const r = await fetch('https://accounts.spotify.com/api/token', {
     method: 'POST',
-    headers: { 'Authorization': `Basic ${creds}`, 'Content-Type': 'application/x-www-form-urlencoded' },
+    headers: {
+      'Authorization': `Basic ${creds}`,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
     body: 'grant_type=client_credentials'
   });
   const data = await r.json();
+  if (!data.access_token) {
+    console.error('Spotify token error:', JSON.stringify(data));
+    throw new Error('Could not get Spotify token');
+  }
   spotifyToken = data.access_token;
   spotifyTokenExpiry = Date.now() + (data.expires_in - 60) * 1000;
+  console.log('Spotify token refreshed OK');
   return spotifyToken;
 }
 
 async function spotifyGet(url) {
   const token = await getSpotifyToken();
-  console.log('Spotify GET:', url.substring(0, 120));
   const r = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
   if (!r.ok) {
     const body = await r.text();
-    console.error(`Spotify error ${r.status} for ${url.substring(0, 80)}:`, body.substring(0, 200));
-    throw new Error(`Spotify ${r.status}: ${body.substring(0, 100)}`);
+    console.error(`Spotify ${r.status} for ${url.substring(0, 100)}:`, body.substring(0, 150));
+    throw new Error(`Spotify ${r.status}`);
   }
   return r.json();
 }
 
-// ── Proxy MusicBrainz ───────────────────────────────────────
+// ── MusicBrainz ─────────────────────────────────────────────
 app.get('/api/mb', async (req, res) => {
   const { endpoint, ...rest } = req.query;
   if (!endpoint) return res.status(400).json({ error: 'Missing endpoint' });
@@ -56,7 +63,7 @@ app.get('/api/mb', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// ── Proxy TMDB ──────────────────────────────────────────────
+// ── TMDB ─────────────────────────────────────────────────────
 app.get('/api/tmdb', async (req, res) => {
   if (!TMDB_KEY) return res.status(503).json({ error: 'TMDB key not configured' });
   const { path: tmdbPath, ...rest } = req.query;
@@ -70,26 +77,27 @@ app.get('/api/tmdb', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// ── Spotify: Search tracks ──────────────────────────────────
+// ── Spotify: Search tracks ───────────────────────────────────
 app.get('/api/spotify/search', async (req, res) => {
   if (!SPOTIFY_CLIENT_ID) return res.status(503).json({ error: 'Spotify not configured' });
   const { q } = req.query;
   if (!q) return res.status(400).json({ error: 'Missing query' });
   try {
-    const data = await spotifyGet(`https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=track&limit=20`);
+    const url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=track&limit=10`;
+    const data = await spotifyGet(url);
     const qLower = q.toLowerCase().replace(/[^a-z0-9 ]/g, '');
     const seen = new Set();
     const filtered = (data.tracks?.items || []).filter(t => {
-      const name = t.name?.toLowerCase() || '';
+      const name = (t.name || '').toLowerCase();
       const nameClean = name.replace(/[^a-z0-9 ]/g, '');
-      // Must roughly match the search query
-      if (!nameClean.includes(qLower.substring(0, 6)) &&
-          !qLower.includes(nameClean.substring(0, 6))) return false;
-      // Filter live/demo/remix versions
-      if (/live|demo|acoustic|remix|remaster|karaoke|instrumental|session|concert|tour/i.test(name)) return false;
-      // Deduplicate by base song name + artist
-      const artist = t.artists?.[0]?.name?.toLowerCase() || '';
-      const key = `${nameClean.replace(/ /g,'')}:${artist.replace(/ /g,'')}`;
+      // Filter non-matching results
+      if (!nameClean.includes(qLower.substring(0, 5)) &&
+          !qLower.includes(nameClean.substring(0, 5))) return false;
+      // Filter live/demo/remix
+      if (/\blive\b|\bdemo\b|acoustic|remix|remaster|karaoke|instrumental/i.test(name)) return false;
+      // Deduplicate
+      const artist = (t.artists?.[0]?.name || '').toLowerCase().replace(/[^a-z]/g, '');
+      const key = `${nameClean.replace(/ /g,'')}:${artist}`;
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
@@ -98,47 +106,35 @@ app.get('/api/spotify/search', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// ── Spotify: Smart soundtrack finder ───────────────────────
-// Strategy 1: Search for "[title] soundtrack" playlists, verify track appears in them
-// Strategy 2: Search Spotify albums of type "soundtrack" that contain this track
+// ── Spotify: Find soundtrack appearances ─────────────────────
 app.get('/api/spotify/track-playlists', async (req, res) => {
   if (!SPOTIFY_CLIENT_ID) return res.status(503).json({ error: 'Spotify not configured' });
-  const { title, artist, trackId } = req.query;
+  const { title, artist } = req.query;
   if (!title) return res.status(400).json({ error: 'Missing title' });
-
   try {
-    // Strategy 1: Search for soundtrack ALBUMS containing this track
-    // This is more reliable than playlists
-    const albumSearch = await spotifyGet(
-      `https://api.spotify.com/v1/search?q=${encodeURIComponent(title + ' ' + (artist || ''))}&type=album&limit=10`
+    // Search for soundtrack albums matching this song
+    const searchQ = encodeURIComponent(`${title} ${artist || ''} soundtrack`);
+    const albumData = await spotifyGet(
+      `https://api.spotify.com/v1/search?q=${searchQ}&type=album&limit=8`
     );
 
-    const soundtrackAlbums = (albumSearch.albums?.items || []).filter(a => {
+    const soundtrackAlbums = (albumData.albums?.items || []).filter(a => {
       if (!a) return false;
       const name = a.name || '';
-      // Must mention soundtrack or score
       if (!/soundtrack|original score|music from|songs from|o\.s\.t/i.test(name)) return false;
-      // Skip generic compilations
-      if (/top \d+|greatest hits|collection|instrumenta|vol\.|volume/i.test(name)) return false;
-      // Skip non-Latin
+      if (/top \d+|greatest hits|collection|instrumenta|karaoke|efteling|theme park/i.test(name)) return false;
       if (name.charCodeAt(0) > 127) return false;
       return true;
     });
 
-    // For each album, include it (name filtering already ensures quality)
     const verified = [];
-    for (const album of soundtrackAlbums.slice(0, 6)) {
+    for (const album of soundtrackAlbums.slice(0, 5)) {
       try {
-        // Quick check - does album track list include our song?
-        let tracks = { items: [] };
-        try {
-          tracks = await spotifyGet(`https://api.spotify.com/v1/albums/${album.id}/tracks?limit=48`);
-        } catch(albumErr) {
-          console.error('Album tracks error:', albumErr.message);
-        }
-        const found = tracks.items.length === 0 || tracks.items.some(t =>
-          t.name?.toLowerCase() === title.toLowerCase() ||
-          t.name?.toLowerCase().includes(title.toLowerCase())
+        const trackData = await spotifyGet(
+          `https://api.spotify.com/v1/albums/${album.id}/tracks?limit=30`
+        );
+        const found = (trackData.items || []).some(t =>
+          (t.name || '').toLowerCase().includes(title.toLowerCase())
         );
         if (found) {
           const cleanName = album.name
@@ -147,9 +143,8 @@ app.get('/api/spotify/track-playlists', async (req, res) => {
             .replace(/\bost\b/gi, '')
             .replace(/soundtrack/gi, '')
             .replace(/original score/gi, '')
-            .replace(/music from (the )?/gi, '')
-            .replace(/songs from (the )?/gi, '')
-            .replace(/o\.s\.t\.?/gi, '')
+            .replace(/music from( the)?/gi, '')
+            .replace(/songs from( the)?/gi, '')
             .replace(/\(.*?\)/g, '')
             .replace(/[-–:|]/g, ' ')
             .replace(/\s+/g, ' ')
@@ -158,34 +153,28 @@ app.get('/api/spotify/track-playlists', async (req, res) => {
             id: album.id,
             name: album.name,
             cleanName: cleanName || album.name,
-            year: album.release_date ? album.release_date.substring(0, 4) : '',
+            year: (album.release_date || '').substring(0, 4),
             image: album.images?.[1]?.url || album.images?.[0]?.url || null,
             spotifyUrl: album.external_urls?.spotify || '',
             type: 'album'
           });
         }
-      } catch { /* skip failed album lookups */ }
+      } catch (e) { console.error('Album check error:', e.message); }
     }
 
-    // Strategy 2: Also search playlists as fallback if albums found < 2
+    // Playlist fallback if fewer than 2 album results
     if (verified.length < 2) {
-      const playlistSearch = await spotifyGet(
-        `https://api.spotify.com/v1/search?q=${encodeURIComponent(title + ' original soundtrack')}&type=playlist&limit=8`
+      const plQ = encodeURIComponent(`${title} original soundtrack`);
+      const plData = await spotifyGet(
+        `https://api.spotify.com/v1/search?q=${plQ}&type=playlist&limit=6`
       );
-      const playlists = (playlistSearch.playlists?.items || []).filter(p => {
+      const playlists = (plData.playlists?.items || []).filter(p => {
         if (!p) return false;
         const name = p.name || '';
         if (!/soundtrack|original score|music from|songs from/i.test(name)) return false;
-        if (/top \d+|greatest hits|collection|instrumenta|mix|radio/i.test(name)) return false;
+        if (/top \d+|greatest hits|instrumenta|mix|radio|efteling|karaoke/i.test(name)) return false;
         if (name.charCodeAt(0) > 127) return false;
         if (name.length < 4 || name.length > 80) return false;
-        // Blacklist known junk playlists
-        if (/efteling|disney on ice|karaoke|lullaby|ringtone/i.test(name)) return false;
-        // Skip theme park / non-film playlists
-        if (/theme park|pretpark|attractie/i.test(name)) return false;
-        // Don't add if we already have this movie from album search
-        const clean = name.replace(/soundtrack|score|music from/gi, '').trim().toLowerCase();
-        if (verified.some(v => v.cleanName.toLowerCase().includes(clean.substring(0, 10)))) return false;
         return true;
       }).slice(0, 3);
 
@@ -193,16 +182,14 @@ app.get('/api/spotify/track-playlists', async (req, res) => {
         const cleanName = pl.name
           .replace(/original motion picture soundtrack/gi, '')
           .replace(/original soundtrack/gi, '')
-          .replace(/\bost\b/gi, '')
           .replace(/soundtrack/gi, '')
           .replace(/original score/gi, '')
-          .replace(/music from (the )?/gi, '')
-          .replace(/songs from (the )?/gi, '')
+          .replace(/music from( the)?/gi, '')
           .replace(/\(.*?\)/g, '')
           .replace(/[-–:|]/g, ' ')
           .replace(/\s+/g, ' ')
           .trim();
-        if (cleanName.length > 1) {
+        if (cleanName.length > 1 && !verified.some(v => v.cleanName.toLowerCase() === cleanName.toLowerCase())) {
           verified.push({
             id: pl.id,
             name: pl.name,
@@ -218,6 +205,7 @@ app.get('/api/spotify/track-playlists', async (req, res) => {
 
     res.json({ playlists: verified });
   } catch (err) {
+    console.error('track-playlists error:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
