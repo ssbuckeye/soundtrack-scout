@@ -11,12 +11,12 @@
     --bg: #0e0e0f; --surface: #181819; --surface2: #222224;
     --border: #2a2a2d; --text: #f0ede8; --text-muted: #7a7a82;
     --accent: #e8c87a; --accent-dim: rgba(232,200,122,0.12);
+    --green: #1db954;
   }
   body { background: var(--bg); color: var(--text); font-family: 'Nunito Sans', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
 
   header { padding: 20px 32px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(14,14,15,0.94); backdrop-filter: blur(12px); z-index: 100; }
   .logo { font-family: 'Nunito', sans-serif; font-size: 22px; color: var(--text); display: flex; align-items: center; gap: 10px; }
-  .logo-dot { color: var(--accent); }
   .badge { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); background: var(--accent-dim); padding: 3px 8px; border-radius: 4px; }
 
   .main { max-width: 720px; margin: 0 auto; padding: 56px 32px 24px; }
@@ -27,7 +27,6 @@
   .tabs { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 4px; width: fit-content; margin-bottom: 14px; }
   .tab { padding: 8px 20px; border-radius: 7px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text-muted); transition: all 0.18s; border: none; background: none; font-family: 'Nunito Sans', sans-serif; position: relative; }
   .tab.active { background: var(--surface2); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
-  .tab-soon { font-size: 9px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--accent); background: var(--accent-dim); padding: 1px 5px; border-radius: 3px; margin-left: 6px; vertical-align: middle; }
 
   .search-row { display: flex; gap: 10px; }
   .search-input { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-size: 15px; color: var(--text); font-family: 'Nunito Sans', sans-serif; outline: none; transition: border-color 0.18s; }
@@ -79,6 +78,27 @@
   .tlink { font-size: 11px; padding: 4px 9px; border-radius: 4px; border: 1px solid var(--border); color: var(--text-muted); text-decoration: none; transition: all 0.15s; }
   .tlink:hover { color: var(--text); border-color: var(--text-muted); }
 
+  /* Song cards */
+  .song-result-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0; margin-bottom: 16px; overflow: hidden; }
+  .song-result-header { display: flex; align-items: center; gap: 16px; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+  .song-album-art { width: 56px; height: 56px; border-radius: 8px; background: var(--surface2); flex-shrink: 0; overflow: hidden; }
+  .song-album-art img { width: 100%; height: 100%; object-fit: cover; }
+  .song-name { font-family: 'Nunito', sans-serif; font-size: 17px; font-weight: 700; margin-bottom: 2px; }
+  .song-artist { font-size: 13px; color: var(--text-muted); }
+  .spotify-btn { margin-left: auto; flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--green); border: 1px solid var(--green); padding: 6px 12px; border-radius: 20px; text-decoration: none; transition: all 0.15s; }
+  .spotify-btn:hover { background: rgba(29,185,84,0.1); }
+
+  .appearances-section { padding: 16px 20px; }
+  .appearances-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 12px; }
+  .appearance-item { display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .appearance-item:last-child { border-bottom: none; }
+  .appearance-poster { width: 40px; height: 58px; border-radius: 4px; background: var(--surface2); flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .appearance-poster img { width: 100%; height: 100%; object-fit: cover; }
+  .appearance-title { font-size: 14px; font-weight: 600; }
+  .appearance-year { font-size: 12px; color: var(--text-muted); }
+  .appearance-type { font-size: 11px; color: var(--accent); background: var(--accent-dim); padding: 2px 7px; border-radius: 4px; margin-left: 6px; }
+  .no-appearances { font-size: 13px; color: var(--text-muted); padding: 8px 0; }
+
   /* States */
   .loading { text-align: center; padding: 60px 32px; color: var(--text-muted); }
   .spinner { width: 32px; height: 32px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
@@ -87,16 +107,6 @@
   .empty-icon { font-size: 44px; margin-bottom: 14px; }
   .empty h3 { font-family: 'Nunito', sans-serif; font-size: 20px; color: var(--text); margin-bottom: 8px; }
   .notice { font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 12px; padding: 10px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border); }
-
-  /* Coming soon */
-  .coming-soon { text-align: center; padding: 64px 32px; max-width: 480px; margin: 0 auto; }
-  .coming-soon-icon { font-size: 52px; margin-bottom: 20px; }
-  .coming-soon h2 { font-family: 'Nunito', sans-serif; font-size: 26px; margin-bottom: 12px; line-height: 1.2; }
-  .coming-soon p { color: var(--text-muted); margin-bottom: 24px; line-height: 1.7; }
-  .feature-list { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; text-align: left; margin-bottom: 24px; }
-  .feature-list-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 12px; }
-  .feature-item { display: flex; align-items: center; gap: 10px; font-size: 14px; padding: 5px 0; }
-  .feature-item span { color: var(--accent); }
 
   footer { text-align: center; padding: 28px; color: var(--text-muted); font-size: 12px; border-top: 1px solid var(--border); margin-top: 40px; }
 
@@ -127,11 +137,11 @@
 
 <section class="main">
   <h1 class="headline">Where have you heard<br><em>that song</em> before?</h1>
-  <p class="sub">Real soundtrack data — search thousands of films.</p>
+  <p class="sub">Real soundtrack data — search thousands of films and songs.</p>
 
   <div class="tabs">
     <button class="tab active" onclick="setMode('movie')" id="tab-movie">🎬 Movie → Songs</button>
-    <button class="tab" onclick="setMode('song')" id="tab-song">🎵 Song → Movies <span class="tab-soon">Soon</span></button>
+    <button class="tab" onclick="setMode('song')" id="tab-song">🎵 Song → Movies</button>
   </div>
 
   <div class="search-row">
@@ -139,7 +149,7 @@
     <button class="search-btn" id="searchBtn" onclick="doSearch()">Search</button>
   </div>
 
-  <div class="trending">
+  <div class="trending" id="trendingRow">
     <span class="trending-label">Try</span>
     <span class="chip" onclick="quickSearch('Pulp Fiction')">Pulp Fiction</span>
     <span class="chip" onclick="quickSearch('Drive')">Drive</span>
@@ -153,7 +163,7 @@
   <div id="resultsContent"></div>
 </section>
 
-<footer>Soundtrack Scout · Powered by <a href="https://musicbrainz.org" target="_blank" style="color:var(--text-muted)">MusicBrainz</a> + <a href="https://themoviedb.org" target="_blank" style="color:var(--text-muted)">TMDB</a> · Built with Claude</footer>
+<footer>Soundtrack Scout · Powered by <a href="https://musicbrainz.org" target="_blank" style="color:var(--text-muted)">MusicBrainz</a> + <a href="https://themoviedb.org" target="_blank" style="color:var(--text-muted)">TMDB</a> + <a href="https://spotify.com" target="_blank" style="color:var(--text-muted)">Spotify</a> · Built with Claude</footer>
 
 <script>
 const API = '/api/mb';
@@ -163,51 +173,35 @@ let lastPosters = [];
 const rgStore = {};
 const EMOJIS = ['🎬','🎥','🎞️','📽️','🎦','🎭','🌟','💫','⭐','🎵'];
 
-// ── TMDB — set your API key here once you have it ──────────
-// Get a free key at https://www.themoviedb.org/settings/api
-const TMDB_KEY = '';  // <-- paste your key between the quotes
-
+// ── TMDB ────────────────────────────────────────────────────
 async function tmdbSearch(title, year) {
   try {
-    // Strip common soundtrack suffixes from MusicBrainz titles
     const cleanTitle = title
       .replace(/:\s*(music from|songs from|original motion picture|original soundtrack|ost|the motion picture|the original soundtrack|music from and inspired by|the album|music from the film).*/i, '')
-      .replace(/\s*[\-–]\s*(original motion picture|original soundtrack|ost|soundtrack).*/i, '')
+      .replace(/\s*[-]\s*(original motion picture|original soundtrack|ost|soundtrack).*/i, '')
       .replace(/\s*\(.*?(soundtrack|score|ost|music from|music inspired).*?\)/i, '')
       .replace(/\s*(soundtrack|score|ost)\s*$/i, '')
       .trim();
     const q = encodeURIComponent(cleanTitle);
-
-    // Fetch results without year constraint so we get the full list
     const r = await fetch(`/api/tmdb?path=/search/movie&query=${q}`);
     if (!r.ok) return null;
     const data = await r.json();
     const results = data.results || [];
     if (!results.length) return null;
-
-    // Pick best match:
-    // 1. Exact title match closest to the given year
-    // 2. Exact title match with highest popularity
-    // 3. First result by popularity
-    const titleLower = title.toLowerCase();
+    const titleLower = cleanTitle.toLowerCase();
     const exactMatches = results.filter(r =>
-      r.title?.toLowerCase() === titleLower ||
-      r.original_title?.toLowerCase() === titleLower
+      r.title?.toLowerCase() === titleLower || r.original_title?.toLowerCase() === titleLower
     );
-
     let best = null;
     if (exactMatches.length && year) {
-      // Find closest year match among exact title matches
       best = exactMatches.reduce((a, b) => {
         const aDiff = Math.abs(parseInt(a.release_date) - parseInt(year));
         const bDiff = Math.abs(parseInt(b.release_date) - parseInt(year));
         return aDiff <= bDiff ? a : b;
       });
     } else if (exactMatches.length) {
-      // Most popular exact match
       best = exactMatches.reduce((a, b) => (a.popularity > b.popularity ? a : b));
     } else {
-      // Fall back to most popular result overall
       best = results.reduce((a, b) => (a.popularity > b.popularity ? a : b));
     }
     return {
@@ -219,6 +213,20 @@ async function tmdbSearch(title, year) {
   } catch { return null; }
 }
 
+// ── Spotify ─────────────────────────────────────────────────
+async function spotifySearchTracks(q) {
+  const r = await fetch(`/api/spotify/search?q=${encodeURIComponent(q)}`);
+  if (!r.ok) throw new Error(`Spotify search failed ${r.status}`);
+  return r.json();
+}
+
+async function spotifyFindSoundtracks(title, artist) {
+  const r = await fetch(`/api/spotify/track-playlists?title=${encodeURIComponent(title)}&artist=${encodeURIComponent(artist || '')}`);
+  if (!r.ok) return { playlists: [] };
+  return r.json();
+}
+
+// ── MusicBrainz ─────────────────────────────────────────────
 async function mbFetch(endpoint, params = {}) {
   params.fmt = 'json';
   params.endpoint = endpoint;
@@ -228,18 +236,25 @@ async function mbFetch(endpoint, params = {}) {
   return r.json();
 }
 
+// ── UI helpers ───────────────────────────────────────────────
 function setMode(mode) {
   currentMode = mode;
   document.getElementById('tab-movie').classList.toggle('active', mode === 'movie');
   document.getElementById('tab-song').classList.toggle('active', mode === 'song');
+
+  const chips = document.querySelectorAll('.chip');
+  const movieChips = ['Pulp Fiction', 'Drive', 'Almost Famous', 'Trainspotting', 'Guardians of the Galaxy'];
+  const songChips  = ['Tiny Dancer', 'Nightcall', 'Born to Run', 'Bohemian Rhapsody', 'Hooked on a Feeling'];
+  chips.forEach((c, i) => {
+    const list = mode === 'movie' ? movieChips : songChips;
+    c.textContent = list[i];
+    c.onclick = () => quickSearch(list[i]);
+  });
+
   document.getElementById('searchInput').placeholder = mode === 'movie'
     ? 'Try: Pulp Fiction, Drive, Almost Famous...'
-    : 'Try: Tiny Dancer, Heroes, Born to Run...';
-  if (mode === 'song') {
-    showSongComingSoon();
-  } else {
-    document.getElementById('resultsSection').style.display = 'none';
-  }
+    : 'Try: Tiny Dancer, Bohemian Rhapsody, Born to Run...';
+  document.getElementById('resultsSection').style.display = 'none';
 }
 
 function quickSearch(term) {
@@ -271,24 +286,19 @@ function escHtml(str) {
 async function doSearch() {
   const q = document.getElementById('searchInput').value.trim();
   if (!q) return;
-  if (currentMode === 'song') { showSongComingSoon(); return; }
-  await searchMovies(q);
+  currentMode === 'movie' ? await searchMovies(q) : await searchSongs(q);
 }
 
-// ── MOVIE MODE ──────────────────────────────────────────────
-
+// ── MOVIE MODE ───────────────────────────────────────────────
 async function searchMovies(q) {
   showLoading('Searching soundtracks…');
   try {
     let groups = [];
-
-    // Three-tier search: strict → broad → broadest
     const attempts = [
       { query: `releasegroup:"${q}" AND secondarytype:Soundtrack`, limit: 10 },
       { query: `${q} AND secondarytype:Soundtrack`, limit: 10 },
       { query: q, limit: 25 }
     ];
-
     for (const params of attempts) {
       if (groups.length) break;
       const data = await mbFetch('release-group', params);
@@ -296,17 +306,12 @@ async function searchMovies(q) {
         (rg['secondary-types'] || []).some(t => t.toLowerCase() === 'soundtrack')
       );
     }
-
-    // Filter out non-film results: Broadway cast recordings, TV OSTs, etc.
     groups = groups.filter(rg => {
       const t = rg.title;
-      // Skip Broadway/cast recording/stage show results
       if (/broadway|cast recording|stage|theatre|theater/i.test(t)) return false;
-      // Skip if title starts with non-ASCII characters (Korean, Japanese, etc.)
       if (t.charCodeAt(0) > 127) return false;
       return true;
     });
-
     if (!groups.length) {
       document.getElementById('resultsContent').innerHTML = `
         <div class="empty"><div class="empty-icon">🎬</div>
@@ -314,27 +319,21 @@ async function searchMovies(q) {
         <p>Try a slightly different title — MusicBrainz has 50,000+ soundtracks.</p></div>`;
       doneLoading(); return;
     }
-
     lastResults = groups;
     groups.forEach((rg, i) => { rgStore[i] = rg; });
-
-    // Fetch TMDB posters in parallel — each entry uses its own year
     lastPosters = await Promise.all(groups.map(rg => {
       const year = (rg['first-release-date'] || '').substring(0, 4);
       return tmdbSearch(rg.title, year);
     }));
-
     renderMovieList(groups, lastPosters, q);
   } catch(e) {
     document.getElementById('resultsContent').innerHTML = `
       <div class="empty"><div class="empty-icon">😕</div>
       <h3>Could not connect to server</h3>
-      <p>Make sure the server is running: <code>node server.js</code></p>
-      <p style="margin-top:8px;font-size:12px;color:var(--text-muted)">${e.message}</p></div>`;
+      <p>${e.message}</p></div>`;
     doneLoading();
   }
 }
-
 
 function renderMovieList(groups, posters, q) {
   const rows = groups.map((rg, i) => {
@@ -353,7 +352,6 @@ function renderMovieList(groups, posters, q) {
         <div class="movie-list-arrow">›</div>
       </div>`;
   }).join('');
-
   document.getElementById('resultsContent').innerHTML = `
     <div class="results-header">
       <div class="results-title">Results for <span>"${escHtml(q)}"</span></div>
@@ -370,23 +368,18 @@ async function loadSoundtrack(idx) {
   const title = rg.title;
   const year = (rg['first-release-date'] || '').substring(0, 4);
   const rgId = rg.id;
-
   showLoading(`Loading "${escHtml(title)}" soundtrack…`);
   try {
-    // Fetch TMDB metadata and MusicBrainz tracks in parallel
     const [tmdb, relData] = await Promise.all([
       tmdbSearch(title, year),
       mbFetch('release', { 'release-group': rgId, limit: 5 })
     ]);
-
     const releases = relData.releases || [];
     let allTracks = [];
-
     if (releases.length) {
       const fullRelease = await mbFetch(`release/${releases[0].id}`, { inc: 'recordings+artist-credits' });
       allTracks = (fullRelease.media || []).flatMap(m => m.tracks || []);
     }
-
     renderSoundtrack(allTracks, title, year, rgId, tmdb);
   } catch(e) {
     document.getElementById('resultsContent').innerHTML = `
@@ -398,19 +391,9 @@ async function loadSoundtrack(idx) {
 }
 
 function renderSoundtrack(tracks, title, year, rgId, tmdb) {
-  const posterHtml = tmdb?.poster
-    ? `<img src="${tmdb.poster}" alt="${escHtml(title)}">`
-    : '🎬';
-
-  const metaLine = [
-    year || 'Year unknown',
-    tmdb?.rating ? '★ ' + tmdb.rating : '',
-  ].filter(Boolean).join(' · ');
-
-  const overviewHtml = tmdb?.overview
-    ? `<div class="soundtrack-overview">${escHtml(tmdb.overview)}</div>`
-    : '';
-
+  const posterHtml = tmdb?.poster ? `<img src="${tmdb.poster}" alt="${escHtml(title)}">` : '🎬';
+  const metaLine = [year || 'Year unknown', tmdb?.rating ? '★ ' + tmdb.rating : ''].filter(Boolean).join(' · ');
+  const overviewHtml = tmdb?.overview ? `<div class="soundtrack-overview">${escHtml(tmdb.overview)}</div>` : '';
   const tracksHtml = tracks.length
     ? tracks.map((t, i) => {
         const rec = t.recording || {};
@@ -436,9 +419,8 @@ function renderSoundtrack(tracks, title, year, rgId, tmdb) {
     : `<div class="empty" style="padding:40px 0">
          <div class="empty-icon">🎵</div>
          <h3>Track listing not in database yet</h3>
-         <p>This is exactly the gap Tunefind fills — once integrated, every track will show here with scene context.</p>
+         <p>MusicBrainz has this soundtrack but detailed tracks haven't been added yet.</p>
        </div>`;
-
   document.getElementById('resultsContent').innerHTML = `
     <button class="back-btn" onclick="goBack()">← Back to results</button>
     <div class="results-header">
@@ -457,36 +439,111 @@ function renderSoundtrack(tracks, title, year, rgId, tmdb) {
       </div>
     </div>
     <div class="tracks-container">${tracksHtml}</div>
-    <div class="notice">Scene context &amp; timestamps coming with Tunefind · Streaming links open search on each platform</div>`;
+    <div class="notice">Streaming links open search on Spotify &amp; Apple Music</div>`;
   doneLoading();
 }
 
 function goBack() {
   const q = document.getElementById('searchInput').value;
-  if (lastResults.length) {
-    renderMovieList(lastResults, lastPosters, q);
+  if (lastResults.length) renderMovieList(lastResults, lastPosters, q);
+}
+
+// ── SONG MODE ────────────────────────────────────────────────
+async function searchSongs(q) {
+  showLoading('Searching songs…');
+  try {
+    // Search Spotify for matching tracks
+    const data = await spotifySearchTracks(q);
+    const tracks = data.tracks?.items || [];
+
+    if (!tracks.length) {
+      document.getElementById('resultsContent').innerHTML = `
+        <div class="empty"><div class="empty-icon">🎵</div>
+        <h3>No songs found for "${escHtml(q)}"</h3>
+        <p>Try searching by song title or artist name.</p></div>`;
+      doneLoading(); return;
+    }
+
+    showLoading('Finding movie appearances…');
+
+    // For each track find soundtrack playlists it appears in
+    const results = await Promise.all(tracks.slice(0, 4).map(async track => {
+      const artist = track.artists?.[0]?.name || '';
+      const { playlists } = await spotifyFindSoundtracks(track.name, artist);
+
+      // For each playlist try to get TMDB poster
+      const enriched = await Promise.all(playlists.slice(0, 5).map(async pl => {
+        // Extract movie title from playlist name
+        const movieTitle = pl.name
+          .replace(/original motion picture soundtrack|original soundtrack|soundtrack|score|music from|songs from/gi, '')
+          .replace(/\(.*?\)/g, '')
+          .trim();
+        const tmdb = movieTitle.length > 2 ? await tmdbSearch(movieTitle, null) : null;
+        return { playlist: pl, movieTitle, tmdb };
+      }));
+
+      return { track, appearances: enriched };
+    }));
+
+    renderSongResults(results, q);
+  } catch(e) {
+    document.getElementById('resultsContent').innerHTML = `
+      <div class="empty"><div class="empty-icon">😕</div>
+      <h3>Could not search songs</h3><p>${e.message}</p></div>`;
+    doneLoading();
   }
 }
 
-// ── SONG MODE — Coming Soon ─────────────────────────────────
+function renderSongResults(results, q) {
+  const cards = results.map(({ track, appearances }) => {
+    const artist = track.artists?.map(a => a.name).join(', ') || 'Unknown Artist';
+    const albumArt = track.album?.images?.[1]?.url || track.album?.images?.[0]?.url || '';
+    const dur = fmtDuration(track.duration_ms);
+    const spotifyUrl = track.external_urls?.spotify || `https://open.spotify.com/search/${encodeURIComponent(track.name)}`;
 
-function showSongComingSoon() {
-  document.getElementById('resultsSection').style.display = 'block';
+    const appearancesHtml = appearances.length
+      ? `<div class="appearances-label">Found in ${appearances.length} soundtrack${appearances.length !== 1 ? 's' : ''}</div>
+         ${appearances.map(({ playlist, movieTitle, tmdb }) => {
+           const posterHtml = tmdb?.poster
+             ? `<img src="${tmdb.poster}" alt="${escHtml(movieTitle)}">`
+             : '🎬';
+           return `
+             <div class="appearance-item">
+               <div class="appearance-poster">${posterHtml}</div>
+               <div style="flex:1;min-width:0">
+                 <div class="appearance-title">${escHtml(movieTitle || playlist.name)}</div>
+                 <div class="appearance-year">
+                   ${tmdb?.year || ''}
+                   <span class="appearance-type">Soundtrack</span>
+                 </div>
+               </div>
+               <a href="${playlist.external_urls?.spotify || '#'}" target="_blank" style="font-size:11px;color:var(--green);text-decoration:none;flex-shrink:0">▶ Play</a>
+             </div>`;
+         }).join('')}`
+      : `<div class="no-appearances">No soundtrack playlists found for this song on Spotify. Try another version or spelling.</div>`;
+
+    return `
+      <div class="song-result-card">
+        <div class="song-result-header">
+          <div class="song-album-art">${albumArt ? `<img src="${escHtml(albumArt)}" alt="album">` : '🎵'}</div>
+          <div style="flex:1;min-width:0">
+            <div class="song-name">${escHtml(track.name)}</div>
+            <div class="song-artist">${escHtml(artist)}${dur ? ` · ${dur}` : ''}</div>
+          </div>
+          <a class="spotify-btn" href="${escHtml(spotifyUrl)}" target="_blank">▶ Spotify</a>
+        </div>
+        <div class="appearances-section">${appearancesHtml}</div>
+      </div>`;
+  }).join('');
+
   document.getElementById('resultsContent').innerHTML = `
-    <div class="coming-soon">
-      <div class="coming-soon-icon">🎵</div>
-      <h2>Song → Movies is coming soon</h2>
-      <p>This is the feature that makes Soundtrack Scout truly unique — search any song and instantly see every film it's ever appeared in, with the exact scene and timestamp.</p>
-      <div class="feature-list">
-        <div class="feature-list-label">Powered by Tunefind integration</div>
-        <div class="feature-item"><span>✦</span> Search any song by title or artist</div>
-        <div class="feature-item"><span>✦</span> See every movie &amp; TV show it appeared in</div>
-        <div class="feature-item"><span>✦</span> Scene descriptions &amp; timestamps</div>
-        <div class="feature-item"><span>✦</span> "Where have I heard this?" — answered instantly</div>
-      </div>
-      <p style="font-size:13px">In the meantime, try <strong style="color:var(--text)">Movie → Songs</strong> — fully live with real data right now.</p>
-    </div>`;
-  document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    <div class="results-header">
+      <div class="results-title">Songs matching <span>"${escHtml(q)}"</span></div>
+      <div class="results-count">${results.length} result${results.length !== 1 ? 's' : ''}</div>
+    </div>
+    ${cards}
+    <div class="notice">Soundtrack data via Spotify · Scene context coming with Tunefind integration</div>`;
+  doneLoading();
 }
 
 document.getElementById('searchInput').addEventListener('keydown', e => {
