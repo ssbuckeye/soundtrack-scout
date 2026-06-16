@@ -129,8 +129,13 @@ app.get('/api/spotify/track-playlists', async (req, res) => {
     for (const album of soundtrackAlbums.slice(0, 6)) {
       try {
         // Quick check - does album track list include our song?
-        const tracks = await spotifyGet(`https://api.spotify.com/v1/albums/${album.id}/tracks?limit=50`);
-        const found = (tracks.items || []).some(t =>
+        let tracks = { items: [] };
+        try {
+          tracks = await spotifyGet(`https://api.spotify.com/v1/albums/${album.id}/tracks?limit=48`);
+        } catch(albumErr) {
+          console.error('Album tracks error:', albumErr.message);
+        }
+        const found = tracks.items.length === 0 || tracks.items.some(t =>
           t.name?.toLowerCase() === title.toLowerCase() ||
           t.name?.toLowerCase().includes(title.toLowerCase())
         );
