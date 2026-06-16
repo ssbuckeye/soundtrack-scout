@@ -32,7 +32,11 @@ async function getSpotifyToken() {
 async function spotifyGet(url) {
   const token = await getSpotifyToken();
   const r = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
-  if (!r.ok) throw new Error(`Spotify ${r.status}`);
+  if (!r.ok) {
+    const body = await r.text();
+    console.error(`Spotify error ${r.status}:`, body.substring(0, 200));
+    throw new Error(`Spotify ${r.status}: ${body.substring(0, 100)}`);
+  }
   return r.json();
 }
 
