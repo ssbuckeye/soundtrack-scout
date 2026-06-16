@@ -513,7 +513,8 @@ function renderSoundtrack(tracks, title, year, rgId, tmdb) {
       </div>
     </div>
     <div class="tracks-container">${tracksHtml}</div>
-    <div class="notice">Streaming links open search on Spotify &amp; Apple Music</div>`;
+    <div class="notice">Streaming links open search on Spotify &amp; Apple Music</div>
+    <div style="text-align:center;margin-top:16px"><button class="share-btn-main" onclick="openShareModal({title:currentTitle,year:currentYear,tracks:currentTracks,tmdb:currentTmdb})">&#8593; Share this soundtrack</button></div>`;
   doneLoading();
 }
 
