@@ -773,12 +773,26 @@ async function downloadCard() {
       backgroundColor: currentCardType === 'discovery' ? '#e8c87a' : '#0e0e0f',
       logging: false
     });
-    const link = document.createElement('a');
-    link.download = `soundtrack-scout-${d.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.png`;
-    link.href = canvas.toDataURL('image/png');
-    link.click();
+
+    // On mobile: use share sheet so user can save to Photos
+    // On desktop: fall back to direct download
+    if (navigator.share) {
+      canvas.toBlob(async (blob) => {
+        const file = new File([blob], 'soundtrack-scout.png', { type: 'image/png' });
+        try {
+          await navigator.share({ files: [file], title: 'Soundtrack Scout' });
+        } catch(e) {
+          if (e.name !== 'AbortError') showToast('Could not share image');
+        }
+      });
+    } else {
+      const link = document.createElement('a');
+      link.download = `soundtrack-scout-${d.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
   } catch(e) {
-    showToast('Could not save image');
+    showToast('Could not generate image');
   }
   renderArea.innerHTML = '';
 }
