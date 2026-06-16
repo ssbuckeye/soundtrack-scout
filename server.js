@@ -71,19 +71,20 @@ app.get('/api/spotify/search', async (req, res) => {
   const { q } = req.query;
   if (!q) return res.status(400).json({ error: 'Missing query' });
   try {
-    const data = await spotifyGet(`https://api.spotify.com/v1/search?q=track:${encodeURIComponent(q)}&type=track&limit=20`);
-    const qLower = q.toLowerCase();
+    const data = await spotifyGet(`https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=track&limit=20`);
+    const qLower = q.toLowerCase().replace(/[^a-z0-9 ]/g, '');
     const seen = new Set();
     const filtered = (data.tracks?.items || []).filter(t => {
       const name = t.name?.toLowerCase() || '';
+      const nameClean = name.replace(/[^a-z0-9 ]/g, '');
       // Must roughly match the search query
-      if (!name.includes(qLower.substring(0, Math.min(qLower.length, 8))) &&
-          !qLower.includes(name.substring(0, Math.min(name.length, 8)))) return false;
+      if (!nameClean.includes(qLower.substring(0, 6)) &&
+          !qLower.includes(nameClean.substring(0, 6))) return false;
       // Filter live/demo/remix versions
-      if (/\blive\b|\bdemo\b|acoustic|remix|remaster|karaoke|instrumental|session|concert|tour/i.test(name)) return false;
+      if (/live|demo|acoustic|remix|remaster|karaoke|instrumental|session|concert|tour/i.test(name)) return false;
       // Deduplicate by base song name + artist
-      const artist = t.artists?.[0]?.name || '';
-      const key = `${name.replace(/[^a-z]/g, '')}:${artist.toLowerCase()}`;
+      const artist = t.artists?.[0]?.name?.toLowerCase() || '';
+      const key = `${nameClean.replace(/ /g,'')}:${artist.replace(/ /g,'')}`;
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
