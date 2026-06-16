@@ -31,10 +31,11 @@ async function getSpotifyToken() {
 
 async function spotifyGet(url) {
   const token = await getSpotifyToken();
+  console.log('Spotify GET:', url.substring(0, 120));
   const r = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
   if (!r.ok) {
     const body = await r.text();
-    console.error(`Spotify error ${r.status}:`, body.substring(0, 200));
+    console.error(`Spotify error ${r.status} for ${url.substring(0, 80)}:`, body.substring(0, 200));
     throw new Error(`Spotify ${r.status}: ${body.substring(0, 100)}`);
   }
   return r.json();
