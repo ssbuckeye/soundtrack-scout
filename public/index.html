@@ -120,6 +120,72 @@
     .soundtrack-header { grid-template-columns: 90px 1fr; }
     .soundtrack-poster { width: 90px; height: 134px; }
   }
+
+  /* ── SHARE MODAL ── */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
+  .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+  .modal-title { font-family: 'Nunito', sans-serif; font-size: 16px; font-weight: 700; }
+  .modal-close { background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; padding: 0; line-height: 1; }
+  .modal-close:hover { color: var(--text); }
+  .card-tabs { display: flex; gap: 4px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+  .card-tab { flex: 1; padding: 7px 4px; border-radius: 6px; border: 1px solid var(--border); background: none; color: var(--text-muted); font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Nunito Sans', sans-serif; transition: all 0.15s; text-align: center; }
+  .card-tab.active { background: var(--surface2); color: var(--text); border-color: var(--accent); }
+  .card-preview-area { padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .share-actions { display: flex; gap: 8px; width: 100%; }
+  .share-action-btn { flex: 1; padding: 11px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Nunito Sans', sans-serif; transition: opacity 0.15s; border: none; text-align: center; }
+  .share-action-btn:hover { opacity: 0.85; }
+  .btn-download { background: var(--accent); color: #1a1400; }
+  .btn-share { background: var(--surface2); color: var(--text); border: 1px solid var(--border) !important; }
+
+  /* ── SHARE BUTTON on detail page ── */
+  .share-btn-main { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: #1a1400; border: none; border-radius: 8px; padding: 9px 16px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Nunito Sans', sans-serif; margin-top: 12px; transition: opacity 0.15s; }
+  .share-btn-main:hover { opacity: 0.88; }
+
+  /* ── SHAREABLE CARDS (rendered off-screen for capture) ── */
+  #card-render-area { position: fixed; left: -9999px; top: 0; width: 360px; }
+
+  .sc-card { width: 360px; border-radius: 16px; overflow: hidden; background: #0e0e0f; border: 1px solid #2a2a2d; font-family: 'Nunito Sans', sans-serif; }
+  .sc-card-header { display: flex; gap: 14px; padding: 20px; border-bottom: 1px solid #2a2a2d; background: #181819; }
+  .sc-poster { width: 64px; height: 94px; border-radius: 6px; background: #222224; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 28px; overflow: hidden; }
+  .sc-poster img { width: 100%; height: 100%; object-fit: cover; }
+  .sc-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #e8c87a; margin-bottom: 4px; }
+  .sc-title { font-family: 'Nunito', sans-serif; font-size: 20px; font-weight: 800; color: #f0ede8; line-height: 1.2; margin-bottom: 4px; }
+  .sc-sub { font-size: 12px; color: #7a7a82; }
+  .sc-tracks { padding: 8px 0; }
+  .sc-track { display: flex; align-items: center; gap: 10px; padding: 8px 20px; }
+  .sc-tnum { font-size: 12px; color: #7a7a82; width: 16px; text-align: right; flex-shrink: 0; }
+  .sc-tbar { width: 3px; height: 28px; border-radius: 2px; background: #2a2a2d; flex-shrink: 0; position: relative; overflow: hidden; }
+  .sc-tbar-fill { position: absolute; bottom: 0; left: 0; right: 0; background: #e8c87a; border-radius: 2px; }
+  .sc-tinfo { flex: 1; min-width: 0; }
+  .sc-tname { font-size: 13px; font-weight: 600; color: #f0ede8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sc-tartist { font-size: 11px; color: #7a7a82; }
+  .sc-footer { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; border-top: 1px solid #2a2a2d; background: #181819; }
+  .sc-logo-text { font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 800; color: #f0ede8; }
+  .sc-logo-dot { color: #e8c87a; }
+  .sc-url { font-size: 11px; color: #7a7a82; }
+
+  .sc-song-header { padding: 20px; border-bottom: 1px solid #2a2a2d; background: #181819; display: flex; align-items: center; gap: 14px; }
+  .sc-song-art { width: 56px; height: 56px; border-radius: 8px; background: #222224; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+  .sc-appearances { padding: 4px 0; }
+  .sc-appearance { display: flex; align-items: center; gap: 12px; padding: 10px 20px; border-bottom: 1px solid #2a2a2d; }
+  .sc-appearance:last-child { border-bottom: none; }
+  .sc-app-poster { width: 36px; height: 52px; border-radius: 4px; background: #222224; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; overflow: hidden; }
+  .sc-app-poster img { width: 100%; height: 100%; object-fit: cover; }
+  .sc-app-title { font-size: 13px; font-weight: 600; color: #f0ede8; }
+  .sc-app-year { font-size: 11px; color: #7a7a82; }
+  .sc-app-badge { font-size: 10px; color: #e8c87a; background: rgba(232,200,122,0.12); padding: 2px 6px; border-radius: 3px; font-weight: 600; white-space: nowrap; }
+
+  .sc-discovery { background: #e8c87a; border: none; }
+  .sc-discovery-inner { padding: 24px 20px; }
+  .sc-disc-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(26,20,0,0.6); margin-bottom: 12px; }
+  .sc-disc-headline { font-family: 'Nunito', sans-serif; font-size: 24px; font-weight: 900; color: #1a1400; line-height: 1.15; margin-bottom: 16px; }
+  .sc-disc-stat { display: flex; align-items: center; gap: 10px; background: rgba(26,20,0,0.08); border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; }
+  .sc-disc-num { font-family: 'Nunito', sans-serif; font-size: 22px; font-weight: 900; color: #1a1400; }
+  .sc-disc-label { font-size: 12px; color: rgba(26,20,0,0.65); line-height: 1.4; }
+  .sc-disc-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; }
+  .sc-disc-cta { font-size: 12px; font-weight: 700; color: rgba(26,20,0,0.7); }
+  .sc-disc-logo { font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 800; color: rgba(26,20,0,0.5); }
 </style>
 </head>
 <body>
@@ -172,6 +238,10 @@ let lastResults = [];
 let lastPosters = [];
 const rgStore = {};
 const EMOJIS = ['🎬','🎥','🎞️','📽️','🎦','🎭','🌟','💫','⭐','🎵'];
+let currentTracks = [];
+let currentTmdb = null;
+let currentTitle = '';
+let currentYear = '';
 
 // ── TMDB ────────────────────────────────────────────────────
 async function tmdbSearch(title, year) {
@@ -380,7 +450,11 @@ async function loadSoundtrack(idx) {
       const fullRelease = await mbFetch(`release/${releases[0].id}`, { inc: 'recordings+artist-credits' });
       allTracks = (fullRelease.media || []).flatMap(m => m.tracks || []);
     }
-    renderSoundtrack(allTracks, title, year, rgId, tmdb);
+    currentTracks = allTracks;
+  currentTmdb = tmdb;
+  currentTitle = title;
+  currentYear = year;
+  renderSoundtrack(allTracks, title, year, rgId, tmdb);
   } catch(e) {
     document.getElementById('resultsContent').innerHTML = `
       <div class="empty"><div class="empty-icon">😕</div>
@@ -557,5 +631,234 @@ document.getElementById('searchInput').addEventListener('keydown', e => {
   if (e.key === 'Enter') doSearch();
 });
 </script>
+
+<div id="card-render-area"></div>
+<div id="share-modal" style="display:none"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+// ── SHARE SYSTEM ────────────────────────────────────────────
+let currentShareData = null;
+let currentCardType = 'movie';
+
+function openShareModal(data) {
+  currentShareData = data;
+  currentCardType = 'movie';
+  renderModal();
+  document.getElementById('share-modal').style.display = 'flex';
+  document.getElementById('share-modal').className = 'modal-overlay';
+}
+
+function closeShareModal() {
+  document.getElementById('share-modal').style.display = 'none';
+}
+
+function setCardType(type) {
+  currentCardType = type;
+  renderModal();
+}
+
+function renderModal() {
+  const d = currentShareData;
+  const modal = document.getElementById('share-modal');
+
+  const tabs = ['movie', 'song', 'discovery'].map(t => `
+    <button class="card-tab ${currentCardType === t ? 'active' : ''}" onclick="setCardType('${t}')">
+      ${t === 'movie' ? '🎬 Soundtrack' : t === 'song' ? '🎵 Song' : '✦ Discovery'}
+    </button>`).join('');
+
+  const cardHtml = buildCardHtml(currentCardType, d);
+
+  modal.innerHTML = `
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <span class="modal-title">Share Soundtrack Scout</span>
+        <button class="modal-close" onclick="closeShareModal()">✕</button>
+      </div>
+      <div class="card-tabs">${tabs}</div>
+      <div class="card-preview-area">
+        <div style="transform:scale(0.85);transform-origin:top center;width:360px;margin-bottom:-28px">
+          ${cardHtml}
+        </div>
+        <div class="share-actions">
+          <button class="share-action-btn btn-download" onclick="downloadCard()">↓ Save Image</button>
+          <button class="share-action-btn btn-share" onclick="nativeShare()">↑ Share</button>
+        </div>
+      </div>
+    </div>`;
+
+  modal.onclick = (e) => { if (e.target === modal) closeShareModal(); };
+}
+
+function buildCardHtml(type, d) {
+  const tracks = d.tracks || [];
+  const top5 = tracks.slice(0, 5);
+  const heights = [100, 80, 95, 70, 60];
+
+  if (type === 'movie') {
+    const posterHtml = d.tmdb?.poster
+      ? `<img src="${d.tmdb.poster}" alt="${escHtml(d.title)}">`
+      : '🎬';
+    const tracksHtml = top5.map((t, i) => {
+      const rec = t.recording || {};
+      const credits = rec['artist-credit'] || t['artist-credit'] || [];
+      const artist = credits.map(a => typeof a === 'string' ? a : (a.artist?.name || '')).join('');
+      const title = t.title || rec.title || 'Unknown Track';
+      return `
+        <div class="sc-track">
+          <span class="sc-tnum">${i+1}</span>
+          <div class="sc-tbar"><div class="sc-tbar-fill" style="height:${heights[i]}%"></div></div>
+          <div class="sc-tinfo">
+            <div class="sc-tname">${escHtml(title)}</div>
+            <div class="sc-tartist">${escHtml(artist) || 'Various Artists'}</div>
+          </div>
+        </div>`;
+    }).join('');
+    return `
+      <div class="sc-card">
+        <div class="sc-card-header">
+          <div class="sc-poster">${posterHtml}</div>
+          <div>
+            <div class="sc-eyebrow">Soundtrack</div>
+            <div class="sc-title">${escHtml(d.title)}</div>
+            <div class="sc-sub">${d.year || ''}${d.tmdb?.rating ? ' · ★ ' + d.tmdb.rating : ''}</div>
+          </div>
+        </div>
+        <div class="sc-tracks">${tracksHtml || '<div style="padding:20px;color:#7a7a82;font-size:13px">Track listing unavailable</div>'}</div>
+        <div class="sc-footer">
+          <span class="sc-logo-text">Soundtrack<span class="sc-logo-dot">.</span>Scout</span>
+          <span class="sc-url">soundtrackscout.app</span>
+        </div>
+      </div>`;
+  }
+
+  if (type === 'song') {
+    const track = top5[0];
+    const rec = track?.recording || {};
+    const credits = rec['artist-credit'] || track?.['artist-credit'] || [];
+    const artist = credits.map(a => typeof a === 'string' ? a : (a.artist?.name || '')).join('');
+    const songTitle = track?.title || rec.title || d.title;
+    const otherTracks = top5.slice(1, 4).map((t, i) => {
+      const r = t.recording || {};
+      const c = r['artist-credit'] || t['artist-credit'] || [];
+      const a = c.map(x => typeof x === 'string' ? x : (x.artist?.name || '')).join('');
+      const tt = t.title || r.title || 'Unknown';
+      return `
+        <div class="sc-appearance">
+          <div class="sc-app-poster">🎬</div>
+          <div style="flex:1">
+            <div class="sc-app-title">${escHtml(tt)}</div>
+            <div class="sc-app-year">${escHtml(a)}</div>
+          </div>
+        </div>`;
+    }).join('');
+    return `
+      <div class="sc-card">
+        <div class="sc-song-header">
+          <div class="sc-song-art">🎵</div>
+          <div>
+            <div class="sc-eyebrow">Also heard in</div>
+            <div class="sc-title">${escHtml(songTitle)}</div>
+            <div class="sc-sub">${escHtml(artist)}</div>
+          </div>
+        </div>
+        <div class="sc-appearances">
+          <div class="sc-appearance">
+            <div class="sc-app-poster">${d.tmdb?.poster ? `<img src="${d.tmdb.poster}">` : '🎬'}</div>
+            <div style="flex:1">
+              <div class="sc-app-title">${escHtml(d.title)}</div>
+              <div class="sc-app-year">${d.year || ''}</div>
+            </div>
+            <span class="sc-app-badge">Featured</span>
+          </div>
+          ${otherTracks}
+        </div>
+        <div class="sc-footer">
+          <span class="sc-logo-text">Soundtrack<span class="sc-logo-dot">.</span>Scout</span>
+          <span class="sc-url">soundtrackscout.app</span>
+        </div>
+      </div>`;
+  }
+
+  if (type === 'discovery') {
+    const count = tracks.length;
+    const year = d.year || '';
+    return `
+      <div class="sc-card sc-discovery">
+        <div class="sc-discovery-inner">
+          <div class="sc-disc-eyebrow">Did you know?</div>
+          <div class="sc-disc-headline">"${escHtml(d.title)}" has ${count} tracks${year ? ' from ' + year : ''}.</div>
+          ${count > 0 ? `
+          <div class="sc-disc-stat">
+            <div class="sc-disc-num">${count}</div>
+            <div class="sc-disc-label">songs in this<br>soundtrack</div>
+          </div>` : ''}
+          ${d.tmdb?.rating ? `
+          <div class="sc-disc-stat">
+            <div class="sc-disc-num">★ ${d.tmdb.rating}</div>
+            <div class="sc-disc-label">audience rating<br>on TMDB</div>
+          </div>` : ''}
+          <div class="sc-disc-footer">
+            <div class="sc-disc-cta">Search it on Soundtrack.Scout ↗</div>
+            <div class="sc-disc-logo">SS</div>
+          </div>
+        </div>
+      </div>`;
+  }
+}
+
+async function downloadCard() {
+  const d = currentShareData;
+  const renderArea = document.getElementById('card-render-area');
+  renderArea.innerHTML = buildCardHtml(currentCardType, d);
+  const card = renderArea.firstElementChild;
+
+  try {
+    const canvas = await html2canvas(card, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: currentCardType === 'discovery' ? '#e8c87a' : '#0e0e0f',
+      logging: false
+    });
+    const link = document.createElement('a');
+    link.download = `soundtrack-scout-${d.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  } catch(e) {
+    alert('Could not generate image. Try the Share button instead.');
+  }
+  renderArea.innerHTML = '';
+}
+
+async function nativeShare() {
+  const d = currentShareData;
+  const url = `https://soundtrack-scout-production.up.railway.app/`;
+  const text = `Check out the "${d.title}" soundtrack on Soundtrack Scout!`;
+
+  if (navigator.share) {
+    try {
+      const renderArea = document.getElementById('card-render-area');
+      renderArea.innerHTML = buildCardHtml(currentCardType, d);
+      const card = renderArea.firstElementChild;
+      const canvas = await html2canvas(card, {
+        scale: 2, useCORS: true,
+        backgroundColor: currentCardType === 'discovery' ? '#e8c87a' : '#0e0e0f',
+        logging: false
+      });
+      renderArea.innerHTML = '';
+      canvas.toBlob(async (blob) => {
+        const file = new File([blob], 'soundtrack-scout.png', { type: 'image/png' });
+        await navigator.share({ title: 'Soundtrack Scout', text, files: [file], url });
+      });
+    } catch(e) {
+      navigator.share({ title: 'Soundtrack Scout', text, url });
+    }
+  } else {
+    navigator.clipboard?.writeText(url + ' - ' + text);
+    alert('Link copied to clipboard!');
+  }
+}
+</script>
+
 </body>
 </html>
