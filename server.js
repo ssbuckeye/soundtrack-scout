@@ -71,11 +71,21 @@ app.get('/api/spotify/search', async (req, res) => {
   const { q } = req.query;
   if (!q) return res.status(400).json({ error: 'Missing query' });
   try {
-    const data = await spotifyGet(`https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=track&limit=10`);
-    // Filter out live, demo, remaster, and cover versions to keep results clean
+    const data = await spotifyGet(`https://api.spotify.com/v1/search?q=track:${encodeURIComponent(q)}&type=track&limit=20`);
+    const qLower = q.toLowerCase();
+    const seen = new Set();
     const filtered = (data.tracks?.items || []).filter(t => {
       const name = t.name?.toLowerCase() || '';
-      if (/live|demo|acoustic|remix|remaster|cover|version|karaoke|instrumental|session|concert|tour/i.test(name)) return false;
+      // Must roughly match the search query
+      if (!name.includes(qLower.substring(0, Math.min(qLower.length, 8))) &&
+          !qLower.includes(name.substring(0, Math.min(name.length, 8)))) return false;
+      // Filter live/demo/remix versions
+      if (/\blive\b|\bdemo\b|acoustic|remix|remaster|karaoke|instrumental|session|concert|tour/i.test(name)) return false;
+      // Deduplicate by base song name + artist
+      const artist = t.artists?.[0]?.name || '';
+      const key = `${name.replace(/[^a-z]/g, '')}:${artist.toLowerCase()}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
       return true;
     }).slice(0, 4);
     res.json({ tracks: { items: filtered } });
