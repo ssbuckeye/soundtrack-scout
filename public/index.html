@@ -473,11 +473,8 @@ async function searchSongs(q) {
 
       // For each playlist try to get TMDB poster
       const enriched = await Promise.all(playlists.slice(0, 5).map(async pl => {
-        // Extract movie title from playlist name
-        const movieTitle = pl.name
-          .replace(/original motion picture soundtrack|original soundtrack|soundtrack|score|music from|songs from/gi, '')
-          .replace(/\(.*?\)/g, '')
-          .trim();
+        // Use server-cleaned name (cleanName) or fall back to raw name
+        const movieTitle = pl.cleanName || pl.name;
         const tmdb = movieTitle.length > 2 ? await tmdbSearch(movieTitle, null) : null;
         return { playlist: pl, movieTitle, tmdb };
       }));

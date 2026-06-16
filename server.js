@@ -67,7 +67,6 @@ app.get('/api/tmdb', async (req, res) => {
 });
 
 // ── Spotify: Search tracks ──────────────────────────────────
-// Usage: GET /api/spotify/search?q=Tiny+Dancer
 app.get('/api/spotify/search', async (req, res) => {
   if (!SPOTIFY_CLIENT_ID) return res.status(503).json({ error: 'Spotify not configured' });
   const { q } = req.query;
@@ -83,8 +82,7 @@ app.get('/api/spotify/search', async (req, res) => {
   }
 });
 
-// ── Spotify: Get playlists a track appears in ───────────────
-// Usage: GET /api/spotify/track-playlists?trackId=xxx&title=Tiny+Dancer&artist=Elton+John
+// ── Spotify: Find soundtrack playlists for a song ───────────
 app.get('/api/spotify/track-playlists', async (req, res) => {
   if (!SPOTIFY_CLIENT_ID) return res.status(503).json({ error: 'Spotify not configured' });
   const { title, artist } = req.query;
@@ -92,21 +90,32 @@ app.get('/api/spotify/track-playlists', async (req, res) => {
   try {
     const token = await getSpotifyToken();
 
-    // Search for soundtrack playlists containing this song
+    // Search with multiple strategies to find soundtrack playlists
     const searchTerms = [
-      `${title} soundtrack`,
-      `${title} ${artist || ''} movie`,
-      `${title} film`
+      `${title} ${artist || ''} original motion picture soundtrack`,
+      `${title} original soundtrack`,
+      `${title} film soundtrack`,
+      `${title} movie soundtrack`
     ];
 
     const results = await Promise.all(searchTerms.map(async term => {
-      const url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(term)}&type=playlist&limit=5`;
+      const url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(term)}&type=playlist&limit=8`;
       const r = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
       if (!r.ok) return [];
       const data = await r.json();
-      return (data.playlists?.items || []).filter(p =>
-        p && /soundtrack|score|music from|songs from/i.test(p.name)
-      );
+      return (data.playlists?.items || []).filter(p => {
+        if (!p) return false;
+        const name = p.name || '';
+        // Must mention soundtrack, score, or music from
+        if (!/soundtrack|original score|music from|songs from|o\.s\.t/i.test(name)) return false;
+        // Skip generic compilation playlists
+        if (/top \d+|best of|greatest hits|collection|playlist|mix|radio|hits|instrumenta/i.test(name)) return false;
+        // Skip non-Latin playlists
+        if (name.charCodeAt(0) > 127) return false;
+        // Must have reasonable length name
+        if (name.length < 4 || name.length > 80) return false;
+        return true;
+      });
     }));
 
     // Deduplicate by playlist id
@@ -117,7 +126,25 @@ app.get('/api/spotify/track-playlists', async (req, res) => {
       return true;
     });
 
-    res.json({ playlists });
+    // Clean up playlist names to extract movie title
+    const cleaned = playlists.map(p => {
+      const cleanName = p.name
+        .replace(/original motion picture soundtrack/gi, '')
+        .replace(/original soundtrack/gi, '')
+        .replace(/\bost\b/gi, '')
+        .replace(/soundtrack/gi, '')
+        .replace(/original score/gi, '')
+        .replace(/music from (the )?/gi, '')
+        .replace(/songs from (the )?/gi, '')
+        .replace(/o\.s\.t\.?/gi, '')
+        .replace(/\(.*?\)/g, '')
+        .replace(/[-–:|]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      return { ...p, cleanName: cleanName || p.name };
+    }).filter(p => p.cleanName.length > 1);
+
+    res.json({ playlists: cleaned });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
