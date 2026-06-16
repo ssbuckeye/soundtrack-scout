@@ -71,8 +71,14 @@ app.get('/api/spotify/search', async (req, res) => {
   const { q } = req.query;
   if (!q) return res.status(400).json({ error: 'Missing query' });
   try {
-    const data = await spotifyGet(`https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=track&limit=5`);
-    res.json(data);
+    const data = await spotifyGet(`https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=track&limit=10`);
+    // Filter out live, demo, remaster, and cover versions to keep results clean
+    const filtered = (data.tracks?.items || []).filter(t => {
+      const name = t.name?.toLowerCase() || '';
+      if (/live|demo|acoustic|remix|remaster|cover|version|karaoke|instrumental|session|concert|tour/i.test(name)) return false;
+      return true;
+    }).slice(0, 4);
+    res.json({ tracks: { items: filtered } });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
