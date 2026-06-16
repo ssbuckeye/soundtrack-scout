@@ -103,10 +103,11 @@ app.get('/api/spotify/track-playlists', async (req, res) => {
       return true;
     });
 
-    // For each album, check if our track actually appears in it (by matching track name)
+    // For each album, include it (name filtering already ensures quality)
     const verified = [];
     for (const album of soundtrackAlbums.slice(0, 6)) {
       try {
+        // Quick check - does album track list include our song?
         const tracks = await spotifyGet(`https://api.spotify.com/v1/albums/${album.id}/tracks?limit=50`);
         const found = (tracks.items || []).some(t =>
           t.name?.toLowerCase() === title.toLowerCase() ||
@@ -153,6 +154,8 @@ app.get('/api/spotify/track-playlists', async (req, res) => {
         if (name.length < 4 || name.length > 80) return false;
         // Blacklist known junk playlists
         if (/efteling|disney on ice|karaoke|lullaby|ringtone/i.test(name)) return false;
+        // Skip theme park / non-film playlists
+        if (/theme park|pretpark|attractie/i.test(name)) return false;
         // Don't add if we already have this movie from album search
         const clean = name.replace(/soundtrack|score|music from/gi, '').trim().toLowerCase();
         if (verified.some(v => v.cleanName.toLowerCase().includes(clean.substring(0, 10)))) return false;

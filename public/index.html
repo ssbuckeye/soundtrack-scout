@@ -521,7 +521,13 @@ function renderSongResults(results, q) {
                <a href="${escHtml(playlist.spotifyUrl || '#')}" target="_blank" style="font-size:11px;color:var(--green);text-decoration:none;flex-shrink:0">▶ Play</a>
              </div>`;
          }).join('')}`
-      : `<div class="no-appearances">No soundtrack playlists found for this song on Spotify. Try another version or spelling.</div>`;
+      : `<div class="no-appearances">
+          No official soundtrack albums found on Spotify for this version.
+          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+            <a href="https://www.tunefind.com/search/site?q=${encodeURIComponent(track.name)}" target="_blank" style="font-size:12px;color:var(--accent);border:1px solid var(--accent);padding:4px 10px;border-radius:4px;text-decoration:none">Search Tunefind ↗</a>
+            <a href="https://www.google.com/search?q=${encodeURIComponent(track.name + ' ' + artist + ' movie scene')}" target="_blank" style="font-size:12px;color:var(--text-muted);border:1px solid var(--border);padding:4px 10px;border-radius:4px;text-decoration:none">Google it ↗</a>
+          </div>
+        </div>`;
 
     return `
       <div class="song-result-card">
